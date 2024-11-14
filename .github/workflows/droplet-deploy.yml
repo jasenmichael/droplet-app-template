@@ -96,7 +96,6 @@ jobs:
           touch ~/.ssh/known_hosts || true
           chmod 644 ~/.ssh/known_hosts
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
-          mkdir -p ${{ env.APP_PATH }} || true
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
