@@ -1,0 +1,5 @@
+GITHUB_REPOSITORY: "your-repo-name"
+DROPLET_NAME: "your-droplet-name"
+APP_PATH: "/home/www/app"
+PLAYBOOK_URL: ""
+PLAYBOOK_PATH: "/home/www/docker-droplet-playbook.yml"
