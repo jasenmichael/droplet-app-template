@@ -25,7 +25,7 @@ jobs:
       - name: Cache DigitalOcean CLI
         uses: actions/cache@v3
         with:
-          path: /usr/local/bin/doctl
+          path: /usr/local/bin
           key: doctl-${{ runner.os }}-v1
           restore-keys: |
             doctl-${{ runner.os }}-v1
@@ -35,6 +35,10 @@ jobs:
         run: |
           curl -sL https://github.com/digitalocean/doctl/releases/download/v1.93.0/doctl-1.93.0-linux-amd64.tar.gz | tar -xz
           sudo mv doctl /usr/local/bin
+
+      - name: Init DigitalOcean CLI token
+        run: |
+          chmod +x /usr/local/bin/doctl
           doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
 
       - name: Get droplet info (Check if droplet with name exists)
