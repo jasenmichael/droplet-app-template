@@ -69,7 +69,6 @@ jobs:
                           chmod 600 /home/www/.ssh/authorized_keys
                           chown -R www:www /home/www/.ssh' \
             --wait
-          sleep 20
 
       - name: Get Droplet IP Address
         id: droplet_ip
@@ -85,6 +84,7 @@ jobs:
 
       - name: Set up SSH for GitHub Actions
         run: |
+          sleep 30
           mkdir -p ~/.ssh || true
           printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
