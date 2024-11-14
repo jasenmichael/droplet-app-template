@@ -108,8 +108,9 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
-            echo ${{ env.PLAYBOOK_PATH }}
-            echo ${{ env.APP_PATH }}
+            echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
+            echo APP_PATH: ${{ env.APP_PATH }}
+            echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
             rm -f ${{ env.PLAYBOOK_PATH }}
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
