@@ -85,13 +85,10 @@ jobs:
       - name: Set up SSH for GitHub Actions
         run: |
           mkdir -p ~/.ssh  # Ensure the .ssh directory exists
-          printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa  # Store private key
-          chmod 600 ~/.ssh/id_rsa  # Set correct permissions for private key
-
-          touch ~/.ssh/known_hosts  # Ensure the known_hosts file exists
-          chmod 644 ~/.ssh/known_hosts  # Ensure the known_hosts file is readable
-
-          # Add the Droplet's SSH key to known_hosts
+          printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          touch ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
 
   deploy-app:
