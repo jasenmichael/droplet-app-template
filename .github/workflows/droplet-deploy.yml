@@ -83,9 +83,13 @@ jobs:
             echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
           fi
 
+      - name: Wait for newly created droplet to be ready for ssh connections
+        if: ${{ env.droplet_exists == 'false' }}
+        run: |
+          sleep 40
+
       - name: Set up SSH for GitHub Actions
         run: |
-          sleep 30
           mkdir -p ~/.ssh || true
           printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
