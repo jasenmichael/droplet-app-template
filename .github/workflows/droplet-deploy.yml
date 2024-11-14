@@ -41,9 +41,9 @@ jobs:
         id: droplet_info
         run: |
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
-          droplet_not_exist=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} || true)
-          echo $droplet_not_exist
-          if [ "$droplet_not_exist" == "true" ]; then
+          droplet_not_exist=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} || echo "")
+          echo "droplet_not_exist: $droplet_not_exist"
+          if [ -z "$droplet_not_exist" ]; then
             echo "droplet_not_exist=true" >> $GITHUB_ENV
             echo "Droplet not found"
           else
