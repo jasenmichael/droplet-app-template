@@ -43,7 +43,6 @@ jobs:
           droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "${{ env.DROPLET_NAME }}")
           if [ -z "$droplet_name" ]; then
             echo "Droplet not found"
-            exit 1
           else
             echo "droplet_name=$droplet_name" >> $GITHUB_ENV
             echo "Droplet exists"
