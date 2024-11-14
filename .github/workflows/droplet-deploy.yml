@@ -58,7 +58,7 @@ jobs:
             --size s-1vcpu-1gb \
             --image ubuntu-20-04-x64 \
             --region nyc1 \
-            --ssh-keys all \
+            --ssh-keys ${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }} \
             --access-token ${{ secrets.DIGITALOCEAN_API_KEY }} \
             --user-data '#!/bin/bash
                           # Create www user
