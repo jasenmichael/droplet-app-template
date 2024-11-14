@@ -59,6 +59,7 @@ jobs:
             --image ubuntu-20-04-x64 \
             --region nyc1 \
             --ssh-keys all \
+            --access-token \
             --user-data '#!/bin/bash
                           # Create www user
                           useradd -m -s /bin/bash www
