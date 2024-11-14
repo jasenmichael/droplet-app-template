@@ -41,18 +41,18 @@ jobs:
         id: droplet_info
         run: |
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
-          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} || true)
+          droplet_not_exist=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} || true)
           echo "Droplet name result: $droplet_name"
-          if [ -z "$droplet_name" ]; then
+          if [ "$droplet_not_exist" == true ]; then
+            echo "droplet_not_exist=true" >> $GITHUB_ENV
             echo "Droplet not found"
-            echo "droplet_name=" >> $GITHUB_ENV
           else
-            echo "droplet_name=$droplet_name" >> $GITHUB_ENV
+            echo "droplet_not_exist=false" >> $GITHUB_ENV
             echo "Droplet exists"
           fi
 
       - name: Create Droplet if not exists
-        if: ${{ steps.droplet_info.outputs.droplet_name != env.DROPLET_NAME }}
+        if: ${{ steps.droplet_info.outputs.droplet_not_exist == true }}
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size s-1vcpu-1gb \
