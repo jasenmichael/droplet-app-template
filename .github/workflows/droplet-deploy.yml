@@ -25,16 +25,16 @@ jobs:
       - name: Cache DigitalOcean CLI
         uses: actions/cache@v3
         with:
-          path: /usr/local/bin
-          key: doctl-${{ runner.os }}-v1
+          path: /usr/local/bin/doctl
+          key: doctl
           restore-keys: |
-            doctl-${{ runner.os }}-v1
+            doctl
 
       - name: Install DigitalOcean CLI (if cache is missed)
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          curl -sL https://github.com/digitalocean/doctl/releases/download/v1.93.0/doctl-1.93.0-linux-amd64.tar.gz | tar -xz
-          sudo mv doctl /usr/local/bin
+          curl -sL https://github.com/digitalocean/doctl/releases/download/v1.93.0/doctl-1.93.0-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
+          sudo chmod +x /usr/local/bin/doctl
 
       - name: Init DigitalOcean CLI token
         run: |
