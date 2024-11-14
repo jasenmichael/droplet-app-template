@@ -58,8 +58,7 @@ jobs:
             --size s-1vcpu-1gb \
             --image ubuntu-20-04-x64 \
             --region nyc1 \
-            # --ssh-keys ${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }} \
-            --ssh-keys "e6:e7:5e:b0:4d:ff:8f:4e:d5:0b:c3:a3:d8:f8:06:db" \
+            --ssh-keys all \
             --user-data '#!/bin/bash
                           # Create www user
                           useradd -m -s /bin/bash www
