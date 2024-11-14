@@ -59,7 +59,8 @@ jobs:
             --region nyc1 \
             --ssh-keys "44084429" \
             --user-data '#!/bin/bash
-                          apt install ansible
+                          apt-get update -y
+                          apt install ansible -y
                           # Create www user
                           useradd -m -s /bin/bash www
                           # Set up SSH for www user
