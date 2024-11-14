@@ -96,6 +96,16 @@ jobs:
           touch ~/.ssh/known_hosts || true
           chmod 644 ~/.ssh/known_hosts
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
+          mkdir -p ${{ env.APP_PATH }} || true
+
+      - name: Copy Configuration File to Droplet
+        uses: appleboy/scp-action@v0.1.1
+        with:
+          host: ${{ env.droplet_ip }}
+          username: www
+          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+          source: droplet-config.yml
+          target: ${{ env.APP_PATH }}/droplet-config.yml
 
       # deploy-app:
       #   runs-on: ubuntu-latest
