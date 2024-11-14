@@ -59,7 +59,7 @@ jobs:
             --image ubuntu-20-04-x64 \
             --region nyc1 \
             --ssh-keys all \
-            --access-token \
+            --access-token ${{ secrets.DIGITALOCEAN_API_KEY }} \
             --user-data '#!/bin/bash
                           # Create www user
                           useradd -m -s /bin/bash www
