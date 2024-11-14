@@ -40,7 +40,7 @@ jobs:
       - name: Get droplet info (Check if droplet with name exists)
         id: droplet_info
         run: |
-          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "$DROPLET_NAME")
+          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "${{ env.DROPLET_NAME }}")
           if [ -z "$droplet_name" ]; then
             echo "Droplet not found"
             exit 1
@@ -50,9 +50,9 @@ jobs:
           fi
 
       - name: Create Droplet if not exists
-        if: env.droplet_name != $DROPLET_NAME
+        if: ${{ env.droplet_name != env.DROPLET_NAME }}
         run: |
-          doctl compute droplet create $DROPLET_NAME \
+          doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size s-1vcpu-1gb \
             --image ubuntu-20-04-x64 \
             --region nyc1 \
@@ -72,7 +72,7 @@ jobs:
       - name: Get Droplet IP Address
         id: droplet_ip
         run: |
-          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "$DROPLET_NAME" | awk '{print $2}')
+          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}')
           if [ -z "$droplet_ip" ]; then
             echo "Droplet IP not found"
             exit 1
@@ -100,5 +100,4 @@ jobs:
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
             git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
-            ansible-playbook ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml
-            "
+            ansible-playbook ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml"
