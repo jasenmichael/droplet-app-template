@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Create Droplet if not exists
-        if: ${{ steps.droplet_info.outputs.droplet_name != "env.DROPLET_NAME" }}
+        if: ${{ steps.droplet_info.outputs.droplet_name != env.DROPLET_NAME }}
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size s-1vcpu-1gb \
