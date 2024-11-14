@@ -58,7 +58,7 @@ jobs:
             --size s-1vcpu-1gb \
             --image ubuntu-20-04-x64 \
             --region nyc1 \
-            --ssh-keys all \
+            --ssh-keys "44084429" \
             --user-data '#!/bin/bash
                           # Create www user
                           useradd -m -s /bin/bash www
