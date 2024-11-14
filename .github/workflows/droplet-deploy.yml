@@ -52,7 +52,7 @@ jobs:
           fi
 
       - name: Create Droplet if not exists
-        if: ${{ env.droplet_name != env.DROPLET_NAME }}
+        if: ${{ steps.droplet_info.outputs.droplet_name != "env.DROPLET_NAME" }}
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size s-1vcpu-1gb \
@@ -84,7 +84,7 @@ jobs:
 
       - name: Set up SSH for GitHub Actions
         run: |
-          mkdir -p ~/.ssh
+          mkdir -p ~/.ssh || true
           printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           touch ~/.ssh/known_hosts
