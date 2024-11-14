@@ -51,7 +51,7 @@ jobs:
           fi
 
       - name: Create Droplet if not exists
-        if: ${{ env.droplet_exists == "true" }}
+        if: ${{ env.droplet_exists }} == "true"
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size s-1vcpu-1gb \
