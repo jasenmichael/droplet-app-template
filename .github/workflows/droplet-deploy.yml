@@ -68,6 +68,7 @@ jobs:
                           chmod 600 /home/www/.ssh/authorized_keys
                           chown -R www:www /home/www/.ssh' \
             --wait
+          sleep 20
 
       - name: Get Droplet IP Address
         id: droplet_ip
