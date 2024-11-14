@@ -97,6 +97,15 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
 
+      - name: Remove Existing Configuration File
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ env.droplet_ip }}
+          username: www
+          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+          script: |
+            rm -f ${{ env.APP_PATH }}/droplet-config.yml
+
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
         with:
