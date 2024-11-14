@@ -41,10 +41,11 @@ jobs:
         id: droplet_info
         run: |
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
-          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "${{ env.DROPLET_NAME }}" || "")
+          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} || true)
           echo "Droplet name result: $droplet_name"
           if [ -z "$droplet_name" ]; then
             echo "Droplet not found"
+            echo "droplet_name=" >> $GITHUB_ENV
             exit 1
           else
             echo "droplet_name=$droplet_name" >> $GITHUB_ENV
