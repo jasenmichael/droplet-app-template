@@ -22,7 +22,6 @@ jobs:
           done < vars.tmp
           rm vars.tmp
 
-      # Step 1: Cache DigitalOcean CLI
       - name: Cache DigitalOcean CLI
         uses: actions/cache@v3
         with:
@@ -31,23 +30,17 @@ jobs:
           restore-keys: |
             doctl-Linux-v1
 
-      # Step 2: Debugging output to check cache-hit status
-      - name: Debug Cache Hit Status
-        run: |
-          echo "Cache hit status: ${{ steps.cache.outputs.cache-hit }}"
-
-      # Step 3: Install DigitalOcean CLI (if doctl is missing)
       - name: Install DigitalOcean CLI (if doctl is missing)
         run: |
           if [ ! -f /usr/local/bin/doctl ]; then
             curl -sL https://github.com/digitalocean/doctl/releases/download/v1.93.0/doctl-1.93.0-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
             sudo chmod +x /usr/local/bin/doctl
-            doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
           fi
 
       - name: Get droplet info (Check if droplet with name exists)
         id: droplet_info
         run: |
+          doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
           droplet_exists=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} && echo "true" || echo "false")
           if [ "$droplet_exists" == "false" ]; then
