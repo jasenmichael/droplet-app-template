@@ -16,7 +16,7 @@ jobs:
 
       - name: Load Ansible Vars into Environment
         run: |
-          sed -e 's/: /=/' droplet.yml > vars.tmp
+          sed -e 's/: /=/' droplet-config.yml > vars.tmp
           while IFS= read -r line; do
             echo "$line" >> $GITHUB_ENV
           done < vars.tmp
