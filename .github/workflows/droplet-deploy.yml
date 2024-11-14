@@ -72,7 +72,8 @@ jobs:
                           echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/www/.ssh/authorized_keys
                           chmod 700 /home/www/.ssh
                           chmod 600 /home/www/.ssh/authorized_keys
-                          chown -R www:www /home/www/.ssh' \
+                          chown -R www:www /home/www/.ssh
+                          echo "www ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers' \
             --wait
 
       - name: Get Droplet IP Address
