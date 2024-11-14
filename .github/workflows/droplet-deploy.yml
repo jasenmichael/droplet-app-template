@@ -106,5 +106,17 @@ jobs:
           script: |
             echo ${{ env.PLAYBOOK_PATH }}
             echo ${{ env.APP_PATH }}
+            rm -f ${{ env.PLAYBOOK_PATH }}
+            if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
+              echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
+              curl -o ${{ env.PLAYBOOK_PATH }} ${{ env.PLAYBOOK_URL }}
+            else
+              echo "PLAYBOOK_URL not provided, skipping download"
+            fi
             git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
-            ansible-playbook ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml"
+            if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
+              ansible-playbook ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml"
+            else
+              echo "Playbook not provided in ${{ env.PLAYBOOK_PATH }}"
+              exit 1
+            fi
