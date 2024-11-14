@@ -41,8 +41,7 @@ jobs:
         id: droplet_info
         run: |
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
-          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "${{ env.DROPLET_NAME }}")
-          echo "Droplet name result: $droplet_name"
+          droplet_name=$(doctl compute droplet list --format "Name" --no-header | grep "${{ env.DROPLET_NAME }}" || "")  # Set droplet_name to empty string if not found          echo "Droplet name result: $droplet_name"
           if [ -z "$droplet_name" ]; then
             echo "Droplet not found"
             exit 1
