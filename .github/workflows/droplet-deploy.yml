@@ -26,9 +26,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /usr/local/bin/doctl
-          key: doctl
+          key: doctl-${{ runner.os }}-v1
           restore-keys: |
-            doctl
+            doctl-${{ runner.os }}-v1
 
       - name: Install DigitalOcean CLI (if cache is missed)
         if: steps.cache.outputs.cache-hit != 'true'
