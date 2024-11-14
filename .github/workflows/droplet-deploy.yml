@@ -105,7 +105,7 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
-          target: ${{ env.APP_PATH }}/droplet-config.yml
+          target: ${{ env.APP_PATH }}/
 
       # deploy-app:
       #   runs-on: ubuntu-latest
@@ -121,8 +121,8 @@ jobs:
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
             echo APP_PATH: ${{ env.APP_PATH }}
             echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
-            rm -f ${{ env.PLAYBOOK_PATH }}
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
+              rm -f ${{ env.PLAYBOOK_PATH }}
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
               curl -o ${{ env.PLAYBOOK_PATH }} ${{ env.PLAYBOOK_URL }}
             else
