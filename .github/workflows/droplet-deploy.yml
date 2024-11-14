@@ -46,7 +46,6 @@ jobs:
           if [ -z "$droplet_name" ]; then
             echo "Droplet not found"
             echo "droplet_name=" >> $GITHUB_ENV
-            exit 1
           else
             echo "droplet_name=$droplet_name" >> $GITHUB_ENV
             echo "Droplet exists"
