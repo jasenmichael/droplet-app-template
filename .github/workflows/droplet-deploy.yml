@@ -83,7 +83,7 @@ jobs:
 
       - name: Set up SSH for GitHub Actions
         run: |
-          mkdir -p ~/.ssh  # Ensure the .ssh directory exists
+          mkdir -p ~/.ssh
           printf "%s" "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           touch ~/.ssh/known_hosts
