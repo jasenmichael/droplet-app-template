@@ -165,10 +165,6 @@ jobs:
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
               wget "${{ env.PLAYBOOK_URL }}" -O "${{ env.PLAYBOOK_PATH }}"
-              if [ $? -ne 0 ]; then
-                echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
-                exit 1
-              fi
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
