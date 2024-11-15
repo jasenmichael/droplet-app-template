@@ -140,7 +140,7 @@ jobs:
             fi
             git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
-              ansible-playbook ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml"
+              ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/droplet-config.yml"
             else
               echo "Playbook not provided in ${{ env.PLAYBOOK_PATH }}"
               exit 1
