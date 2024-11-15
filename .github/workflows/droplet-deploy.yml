@@ -160,9 +160,10 @@ jobs:
             echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
-              rm -f ${{ env.PLAYBOOK_PATH }}
+              rm -f ${{ env.PLAYBOOK_PATH }} || true
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
-              curl -o "${{ env.PLAYBOOK_PATH }}" --verbose ${{ env.PLAYBOOK_URL }}
+              echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
+              curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
                 if [ $? -ne 0 ]; then
                   echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
                   exit 1
