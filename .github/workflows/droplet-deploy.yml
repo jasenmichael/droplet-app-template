@@ -99,7 +99,8 @@ jobs:
           host: ${{ env.droplet_ip }}
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
-          script: echo "Testing SSH connection"
+          script: |
+            echo "Testing SSH connection"
           debug: true
           args: "-v" # Add verbosity for debug output
 
