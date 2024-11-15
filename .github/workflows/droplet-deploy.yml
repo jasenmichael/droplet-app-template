@@ -88,7 +88,7 @@ jobs:
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          sleep 40
+          sleep 60
 
       - name: Set up SSH for GitHub Actions
         run: |
@@ -106,7 +106,7 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
-            rm -f ${{ env.APP_PATH }}/droplet-config.yml
+            rm -f ${{ env.APP_PATH }}/../droplet-config.yml
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
@@ -115,7 +115,7 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
-          target: ${{ env.APP_PATH }}/
+          target: ${{ env.APP_PATH }}/../
 
       # deploy-app:
       #   runs-on: ubuntu-latest
