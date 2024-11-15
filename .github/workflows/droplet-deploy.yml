@@ -77,8 +77,8 @@ jobs:
                           echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers'
                           
                           # Nginx and SSL Configuration
-                          systemctl enable nginx
-                          systemctl start nginx
+                          sudo systemctl enable nginx
+                          sudo systemctl start nginx
                           
                           # Redirect HTTP to HTTPS
                           cat <<EOF > /etc/nginx/sites-available/default
@@ -114,7 +114,7 @@ jobs:
                           echo "0 0 * * * root certbot renew --quiet" >> /etc/crontab
                           
                           # Restart Nginx to apply SSL
-                          systemctl restart nginx' \
+                          sudo systemctl restart nginx' \
             --wait
 
       - name: Get Droplet IP Address
