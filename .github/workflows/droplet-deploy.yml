@@ -139,7 +139,7 @@ jobs:
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          sleep 120
+          sleep 180
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
