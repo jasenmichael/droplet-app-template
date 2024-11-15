@@ -93,40 +93,40 @@ jobs:
         run: |
           sleep 30
 
-      - name: Debug SSH Connection
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ env.droplet_ip }}
-          username: www
-          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
-          script: |
-            echo "Testing SSH connection"
-          debug: true
-          args: "-v" # Add verbosity for debug output
+      # - name: Debug SSH Connection
+      #   uses: appleboy/ssh-action@v0.1.7
+      #   with:
+      #     host: ${{ env.droplet_ip }}
+      #     username: www
+      #     key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+      #     script: |
+      #       echo "Testing SSH connection"
+      #     debug: true
+      #     args: "-v" # Add verbosity for debug output
 
-      - name: Set up SSH for GitHub Actions
-        run: |
-          # Ensure SSH directory exists and set up permissions
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
+      # - name: Set up SSH for GitHub Actions
+      #   run: |
+      #     # Ensure SSH directory exists and set up permissions
+      #     mkdir -p ~/.ssh
+      #     chmod 700 ~/.ssh
 
-          # Write the private key to the id_rsa file
-          echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+      #     # Write the private key to the id_rsa file
+      #     echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
 
-          # Check if private key is present and correctly formatted
-          echo "Private key contents (first 5 lines):"
-          head -n 5 ~/.ssh/id_rsa
+      #     # Check if private key is present and correctly formatted
+      #     echo "Private key contents (first 5 lines):"
+      #     head -n 5 ~/.ssh/id_rsa
 
-          # Ensure the known_hosts file exists and set up permissions
-          touch ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+      #     # Ensure the known_hosts file exists and set up permissions
+      #     touch ~/.ssh/known_hosts
+      #     chmod 644 ~/.ssh/known_hosts
 
-          # Add droplet's host key to known_hosts to avoid SSH warnings
-          ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts || echo "Failed to fetch host key"
+      #     # Add droplet's host key to known_hosts to avoid SSH warnings
+      #     ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts || echo "Failed to fetch host key"
 
-          # Optionally: verify the setup by printing out ssh details
-          echo "SSH setup complete"
+      #     # Optionally: verify the setup by printing out ssh details
+      #     echo "SSH setup complete"
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
