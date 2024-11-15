@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "$APP_USER"
-echo "$GH_TO_DROPLET_PUBLIC_KEY"
+echo "APP_USER $APP_USER"
+echo "GH_TO_DROPLET_PUBLIC_KEY $GH_TO_DROPLET_PUBLIC_KEY"
 
 exit 1
 
