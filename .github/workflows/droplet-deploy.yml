@@ -91,7 +91,7 @@ jobs:
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          sleep 30
+          sleep 120
 
       # - name: Debug SSH Connection
       #   uses: appleboy/ssh-action@v0.1.7
