@@ -162,12 +162,12 @@ jobs:
             echo APP_PATH: ${{ env.APP_PATH }}
             echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
-            wget --no-verbose ${{ env.PLAYBOOK_URL }} -O ${{ env.PLAYBOOK_PATH }} > /dev/null
-            # if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
-            #   echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
-            # else
-            #   echo "PLAYBOOK_URL not provided, skipping download"
-            # fi
+            if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
+              echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
+              wget --no-verbose ${{ env.PLAYBOOK_URL }} -O ${{ env.PLAYBOOK_PATH }} > /dev/null
+            else
+              echo "PLAYBOOK_URL not provided, skipping download"
+            fi
             # git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             # if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
             #   ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@/home/${{ env.APP_USER }}/droplet-config.yml"  --flush-cache
