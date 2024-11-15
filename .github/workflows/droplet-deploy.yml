@@ -164,6 +164,7 @@ jobs:
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
+              rm -rf ${{ env.PLAYBOOK_URL }} 2> /dev/null
               wget --no-verbose ${{ env.PLAYBOOK_URL }} -O ${{ env.PLAYBOOK_PATH }} 2> /dev/null
             else
               echo "PLAYBOOK_URL not provided, skipping download"
