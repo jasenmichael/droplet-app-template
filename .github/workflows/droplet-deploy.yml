@@ -136,7 +136,7 @@ jobs:
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
             if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
-              rm -f /home/${{ env.APP_USER }}/droplet-config.yml
+              rm -f /home/${{ env.APP_USER }}/droplet-config.yml 2> /dev/null
             fi
           debug: true
           args: "-v" # Add verbosity for debug output
