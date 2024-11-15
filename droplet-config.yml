@@ -6,7 +6,7 @@ DROPLET_NAME: your-droplet-name
 # APPLICATION SETTINGS
 APP_PATH: /home/www/app
 APP_USER: www
-PLAYBOOK_URL: "raw.githubusercontent.com/jasenmichael/ansible-droplet-playbooks/refs/heads/main/docker-compose-droplet-playbook.yml"
+PLAYBOOK_URL: "https://raw.githubusercontent.com/jasenmichael/ansible-droplet-playbooks/refs/heads/main/docker-compose-droplet-playbook.yml"
 PLAYBOOK_PATH: "/home/www/docker-compose-droplet-playbook.yml"
 
 # DOCKER SETTINGS
