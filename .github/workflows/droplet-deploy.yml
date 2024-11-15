@@ -168,7 +168,7 @@ jobs:
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
-            # git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
+            git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             # if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
             #   ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@/home/${{ env.APP_USER }}/droplet-config.yml"  --flush-cache
             # else
