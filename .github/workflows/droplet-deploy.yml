@@ -164,7 +164,6 @@ jobs:
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
               echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf > /dev/null
               sudo systemd-resolve --flush-caches
-              sudo systemctl restart NetworkManager
               curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
                 if [ $? -ne 0 ]; then
                   echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
