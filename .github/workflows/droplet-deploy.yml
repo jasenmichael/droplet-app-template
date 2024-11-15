@@ -131,7 +131,9 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
-            rm -f /home/${{ env.APP_USER }}/droplet-config.yml
+            if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
+              rm -f /home/${{ env.APP_USER }}/droplet-config.yml
+            fi
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
