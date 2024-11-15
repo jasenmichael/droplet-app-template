@@ -14,4 +14,4 @@ PLAYBOOK_URL: "https://raw.githubusercontent.com/jasenmichael/ansible-droplet-pl
 PLAYBOOK_PATH: "/home/www/docker-compose-droplet-playbook.yml"
 
 # DOCKER SETTINGS
-DOCKER_COMPOSE_PATH: "{{ APP_PATH }}/docker-compose.yml"
+DOCKER_COMPOSE_PATH: "/home/www/app/docker-compose.yml"
