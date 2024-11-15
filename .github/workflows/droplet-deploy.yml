@@ -81,7 +81,7 @@ jobs:
               # Configure sudoers file
               echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
               echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers\
+              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
             --wait
 
       - name: Get Droplet IP Address
