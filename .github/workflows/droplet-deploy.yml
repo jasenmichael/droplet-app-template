@@ -85,10 +85,10 @@ jobs:
             echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
           fi
 
-      # - name: Wait for newly created droplet to be ready for ssh connections
-      #   if: ${{ env.droplet_exists == 'false' }}
-      #   run: |
-      #     sleep 60
+      - name: Wait for newly created droplet to be ready for ssh connections
+        if: ${{ env.droplet_exists == 'false' }}
+        run: |
+          sleep 30
 
       - name: Debug SSH Connection
         uses: appleboy/ssh-action@v0.1.7
@@ -162,7 +162,7 @@ jobs:
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               rm -f ${{ env.PLAYBOOK_PATH }}
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
-              curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
+              curl -o "${{ env.PLAYBOOK_PATH }}" --verbose ${{ env.PLAYBOOK_URL }}
                 if [ $? -ne 0 ]; then
                   echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
                   exit 1
