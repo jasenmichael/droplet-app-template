@@ -7,11 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  load-vars:
+  setup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout droplet-config.yml
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            droplet-config.yml
+          sparse-checkout-cone-mode: false
 
       - name: Load Ansible Vars .env File
         run: |
