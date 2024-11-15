@@ -91,13 +91,13 @@ jobs:
               cat <<EOF > /etc/nginx/sites-available/default
               server {
                   listen 80;
-                  server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
+                  server_name ${{ env.DROPLET_IP }};
                   return 301 https://\$host\$request_uri;
               }
 
               server {
                   listen 443 ssl;
-                  server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
+                  server_name ${{ env.DROPLET_IP }};
 
                   ssl_certificate /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/fullchain.pem;
                   ssl_certificate_key /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/privkey.pem;
