@@ -51,6 +51,16 @@ jobs:
             echo "Droplet exists"
           fi
 
+      - name: Debug SSH Connection
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ env.droplet_ip }}
+          username: www
+          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+          script: echo "Testing SSH connection"
+          debug: true
+          args: "-v" # Add verbosity for debug output
+
       - name: Create Droplet if not exists
         if: ${{ env.droplet_exists == 'false' }}
         run: |
