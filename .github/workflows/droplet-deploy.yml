@@ -164,4 +164,4 @@ jobs:
     steps:
       - name: Load Ansible Vars into Environment
         run: |
-          echo "APP_NAME: ${{ env.APP_NAME }}"
+          echo "DROPLET_NAME: ${{ env.DROPLET_NAME }}"
