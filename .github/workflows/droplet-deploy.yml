@@ -165,11 +165,12 @@ jobs:
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               rm -f ${{ env.PLAYBOOK_PATH }} || true
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
-              curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
-                if [ $? -ne 0 ]; then
-                  echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
-                  exit 1
-                fi
+              # curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
+              wget --quiet --show-progress --output-document="${{ env.PLAYBOOK_PATH }}" "${{ env.PLAYBOOK_URL }}"
+              if [ $? -ne 0 ]; then
+                echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
+                exit 1
+              fi
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
