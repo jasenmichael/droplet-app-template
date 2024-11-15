@@ -2,6 +2,7 @@ GITHUB_REPOSITORY: jasenmichael/droplet-app-template
 GITHUB_REPOSITORY_BRANCH: main
 DROPLET_NAME: your-droplet-name
 APP_PATH: /home/www/app
+
 PLAYBOOK_URL: "https://raw.githubusercontent.com/jasenmichael/ansible-droplet-playbooks/refs/heads/main/docker-compose-droplet-playbook.yml"
 PLAYBOOK_PATH: /home/www/docker-compose-droplet-playbook.yml
 DOCKER_COMPOSE_PATH: "{{ APP_PATH }}/docker-compose.yml"
