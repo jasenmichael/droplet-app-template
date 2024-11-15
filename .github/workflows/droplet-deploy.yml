@@ -63,13 +63,15 @@ jobs:
                           apt-get update -y
                           apt install ansible -y
                           # Create www user
-                          useradd -m -s /bin/bash www
+                          useradd -m -U -s /bin/bash www
+                          usermod -aG sudo www
                           # Set up SSH for www user
                           mkdir -p /home/www/.ssh
                           echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/www/.ssh/authorized_keys
                           chmod 700 /home/www/.ssh
                           chmod 600 /home/www/.ssh/authorized_keys
                           chown -R www:www /home/www/.ssh
+                          echo "root ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
                           echo "www ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers' \
             --wait
 
@@ -152,7 +154,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ env.droplet_ip }}
-          username: root
+          username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
