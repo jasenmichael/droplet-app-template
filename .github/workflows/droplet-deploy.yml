@@ -165,7 +165,6 @@ jobs:
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               rm -f ${{ env.PLAYBOOK_PATH }} || true
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
-              sudo echo "185.199.108.133 raw.githubusercontent.com" >> /etc/hosts
               curl -o ${{ env.PLAYBOOK_PATH }} --verbose ${{ env.PLAYBOOK_URL }}
                 if [ $? -ne 0 ]; then
                   echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
