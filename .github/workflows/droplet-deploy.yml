@@ -87,7 +87,7 @@ jobs:
             --image ${{ env.DROPLET_IMAGE }} \
             --region ${{ env.DROPLET_REGION }} \
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
-            --user-data-file ./user-data-script.sh \
+            --user-data-file ./user-data-script-ready.sh \
             --wait
 
       - name: Get Droplet IP Address
