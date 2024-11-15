@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy-application:
+  create-droplet:
     runs-on: ubuntu-latest
 
     steps:
@@ -55,33 +55,25 @@ jobs:
         if: ${{ env.droplet_exists == 'false' }}
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
-            --size ${{ env.DROPLET_SIZE }} \
-            --image ${{ env.DROPLET_IMAGE }} \
-            --region ${{ env.DROPLET_REGION }} \
-            --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
+            --size s-1vcpu-1gb \
+            --image ubuntu-20-04-x64 \
+            --region nyc1 \
+            --ssh-keys "44084429" \
             --user-data '#!/bin/bash
-              # Update and upgrade the system
-              sudo apt-get update -y
-              sudo apt-get upgrade -y
-
-              # Install necessary packages
-              sudo apt install -y ansible nginx certbot python3-certbot-nginx
-
-              # Create APP_USER user
-              useradd -m -U -s /bin/bash ${{ env.APP_USER }}
-              usermod -aG sudo ${{ env.APP_USER }}
-
-              # Set up SSH for APP_USER user
-              mkdir -p /home/${{ env.APP_USER }}/.ssh
-              echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/${{ env.APP_USER }}/.ssh/authorized_keys
-              chmod 700 /home/${{ env.APP_USER }}/.ssh
-              chmod 600 /home/${{ env.APP_USER }}/.ssh/authorized_keys
-              chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} /home/${{ env.APP_USER }}/.ssh
-
-              # Configure sudoers file
-              echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-              echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers' \
+                          apt-get update -y
+                          apt install ansible -y
+                          # Create APP_USER user
+                          useradd -m -U -s /bin/bash ${{ env.APP_USER }}
+                          usermod -aG sudo ${{ env.APP_USER }}
+                          # Set up SSH for APP_USER user
+                          mkdir -p /home/${{ env.APP_USER }}/.ssh
+                          echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/${{ env.APP_USER }}/.ssh/authorized_keys
+                          chmod 700 /home/${{ env.APP_USER }}/.ssh
+                          chmod 600 /home/${{ env.APP_USER }}/.ssh/authorized_keys
+                          chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} /home/${{ env.APP_USER }}/.ssh
+                          echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+                          echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+                          echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers' \
             --wait
 
       - name: Get Droplet IP Address
@@ -99,7 +91,7 @@ jobs:
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          sleep 180
+          sleep 120
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
@@ -121,6 +113,33 @@ jobs:
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
 
+      # deploy-app:
+      #   runs-on: ubuntu-latest
+      #   needs: create-droplet
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v3
+
+      #     - name: Load Ansible Vars into Environment
+      #       run: |
+      #         sed '/^#/d' droplet-config.yml | sed -e 's/: /=/' > vars.tmp
+      #         while IFS= read -r line; do
+      #           echo "$line" >> $GITHUB_ENV
+      #         done < vars.tmp
+      #         rm vars.tmp
+
+      #     - name: Get Droplet IP Address
+      #       id: droplet_ip
+      #       run: |
+      #         droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+      #         if [ -z "$droplet_ip" ]; then
+      #           echo "Droplet IP not found"
+      #           exit 1
+      #         else
+      #           echo "Droplet IP found: $droplet_ip"
+      #           echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+      #         fi
+
       - name: Run Ansible Playbook
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -139,8 +158,8 @@ jobs:
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
-            git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             git config --global --add safe.directory ${{ env.APP_PATH }}
+            git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             sudo chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} ${{ env.APP_PATH }}
             if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
               ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@/home/${{ env.APP_USER }}/droplet-config.yml" --flush-cache
