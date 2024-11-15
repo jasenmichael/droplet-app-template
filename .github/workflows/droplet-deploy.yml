@@ -103,8 +103,6 @@ jobs:
             if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
               rm -f /home/${{ env.APP_USER }}/droplet-config.yml 2> /dev/null
             fi
-          debug: true
-          args: "-v" # Add verbosity for debug output
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
@@ -115,10 +113,10 @@ jobs:
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
 
-      # deploy-app:
-      #   runs-on: ubuntu-latest
-      #   needs: create-droplet
-      #   steps:
+  deploy-app:
+    runs-on: ubuntu-latest
+    needs: create-droplet
+    steps:
       - name: Run Ansible Playbook
         uses: appleboy/ssh-action@v0.1.7
         with:
