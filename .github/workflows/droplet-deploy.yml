@@ -113,32 +113,32 @@ jobs:
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
 
-  deploy-app:
-    runs-on: ubuntu-latest
-    needs: create-droplet
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # deploy-app:
+      #   runs-on: ubuntu-latest
+      #   needs: create-droplet
+      #   steps:
+      #     - name: Checkout code
+      #       uses: actions/checkout@v3
 
-      - name: Load Ansible Vars into Environment
-        run: |
-          sed '/^#/d' droplet-config.yml | sed -e 's/: /=/' > vars.tmp
-          while IFS= read -r line; do
-            echo "$line" >> $GITHUB_ENV
-          done < vars.tmp
-          rm vars.tmp
+      #     - name: Load Ansible Vars into Environment
+      #       run: |
+      #         sed '/^#/d' droplet-config.yml | sed -e 's/: /=/' > vars.tmp
+      #         while IFS= read -r line; do
+      #           echo "$line" >> $GITHUB_ENV
+      #         done < vars.tmp
+      #         rm vars.tmp
 
-      - name: Get Droplet IP Address
-        id: droplet_ip
-        run: |
-          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
-          if [ -z "$droplet_ip" ]; then
-            echo "Droplet IP not found"
-            exit 1
-          else
-            echo "Droplet IP found: $droplet_ip"
-            echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
-          fi
+      #     - name: Get Droplet IP Address
+      #       id: droplet_ip
+      #       run: |
+      #         droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+      #         if [ -z "$droplet_ip" ]; then
+      #           echo "Droplet IP not found"
+      #           exit 1
+      #         else
+      #           echo "Droplet IP found: $droplet_ip"
+      #           echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+      #         fi
 
       - name: Run Ansible Playbook
         uses: appleboy/ssh-action@v0.1.7
