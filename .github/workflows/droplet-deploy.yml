@@ -62,18 +62,18 @@ jobs:
             --user-data '#!/bin/bash
                           apt-get update -y
                           apt install ansible -y
-                          # Create www user
-                          useradd -m -U -s /bin/bash www
-                          usermod -aG sudo www
-                          # Set up SSH for www user
-                          mkdir -p /home/www/.ssh
-                          echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/www/.ssh/authorized_keys
-                          chmod 700 /home/www/.ssh
-                          chmod 600 /home/www/.ssh/authorized_keys
-                          chown -R www:www /home/www/.ssh
+                          # Create APP_USER user
+                          useradd -m -U -s /bin/bash ${{ env.APP_USER }}
+                          usermod -aG sudo ${{ env.APP_USER }}
+                          # Set up SSH for APP_USER user
+                          mkdir -p /home/${{ env.APP_USER }}/.ssh
+                          echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/${{ env.APP_USER }}/.ssh/authorized_keys
+                          chmod 700 /home/${{ env.APP_USER }}/.ssh
+                          chmod 600 /home/${{ env.APP_USER }}/.ssh/authorized_keys
+                          chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} /home/${{ env.APP_USER }}/.ssh
                           echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
                           echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-                          echo "www ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers' \
+                          echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers' \
             --wait
 
       - name: Get Droplet IP Address
@@ -97,7 +97,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ env.droplet_ip }}
-          username: www
+          username: ${{ env.APP_USER }}
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
             if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
@@ -108,7 +108,7 @@ jobs:
         uses: appleboy/scp-action@v0.1.1
         with:
           host: ${{ env.droplet_ip }}
-          username: www
+          username: ${{ env.APP_USER }}
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
@@ -144,7 +144,7 @@ jobs:
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ env.droplet_ip }}
-          username: www
+          username: ${{ env.APP_USER }}
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
