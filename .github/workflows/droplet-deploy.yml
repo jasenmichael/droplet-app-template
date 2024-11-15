@@ -81,47 +81,7 @@ jobs:
               # Configure sudoers file
               echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
               echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-
-              # Enable and start nginx
-              sudo systemctl enable nginx
-              sudo systemctl start nginx
-
-              # Redirect HTTP to HTTPS and configure SSL
-              cat <<EOF > /etc/nginx/sites-available/default
-              server {
-                  listen 80;
-                  server_name ${{ env.DROPLET_IP }};
-                  return 301 https://\$host\$request_uri;
-              }
-
-              server {
-                  listen 443 ssl;
-                  server_name ${{ env.DROPLET_IP }};
-
-                  ssl_certificate /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/fullchain.pem;
-                  ssl_certificate_key /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/privkey.pem;
-                  ssl_protocols TLSv1.2 TLSv1.3;
-                  ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256';
-                  ssl_prefer_server_ciphers off;
-
-                  root /var/www/html;
-                  index index.html index.htm index.nginx-debian.html;
-
-                  location / {
-                      try_files \$uri \$uri/ =404;
-                  }
-              }
-              EOF
-
-              # Install Certbot and obtain SSL certificates
-              certbot --nginx -d ${{ env.DROPLET_IP }} --agree-tos --non-interactive --email youremail@example.com
-
-              # Enable automatic SSL renewal
-              echo "0 0 * * * root certbot renew --quiet" >> /etc/crontab
-
-              # Restart Nginx to apply SSL
-              sudo systemctl restart nginx' \
+              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers\
             --wait
 
       - name: Get Droplet IP Address
