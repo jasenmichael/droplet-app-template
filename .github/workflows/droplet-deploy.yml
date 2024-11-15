@@ -162,8 +162,7 @@ jobs:
             echo APP_PATH: ${{ env.APP_PATH }}
             echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
             echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
-            wget ${{ env.PLAYBOOK_URL }} -O ${{ env.PLAYBOOK_PATH }} && true || true
-
+            wget --no-verbose ${{ env.PLAYBOOK_URL }} -O ${{ env.PLAYBOOK_PATH }} > /dev/null
             # if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
             #   echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
             # else
