@@ -106,7 +106,7 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
-            rm -f ${{ env.APP_PATH }}/../droplet-config.yml
+            rm -f /home/${{ env.APP_USER }}/droplet-config.yml
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
@@ -115,7 +115,7 @@ jobs:
           username: www
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
-          target: ${{ env.APP_PATH }}/../
+          target: /home/${{ env.APP_USER }}/
 
       # deploy-app:
       #   runs-on: ubuntu-latest
@@ -140,7 +140,7 @@ jobs:
             fi
             git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
-              ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@${{ env.APP_PATH }}/../droplet-config.yml"  --flush-cache
+              ansible-playbook -i localhost, ${{ env.PLAYBOOK_PATH }} --extra-vars "@/home/${{ env.APP_USER }}/droplet-config.yml"  --flush-cache
             else
               echo "Playbook not provided in ${{ env.PLAYBOOK_PATH }}"
               exit 1
