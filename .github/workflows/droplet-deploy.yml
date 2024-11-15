@@ -79,7 +79,6 @@ jobs:
       - name: Create Droplet if not exists
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          ls -lan
           APP_USER=${{ env.APP_USER }} \
           GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
           envsubst < ./user-data-script.sh > ./user-data-script-ready.sh

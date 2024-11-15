@@ -2,6 +2,7 @@
 
 echo "APP_USER $APP_USER"
 echo "GH_TO_DROPLET_PUBLIC_KEY $GH_TO_DROPLET_PUBLIC_KEY"
+ls -lan .
 
 exit 1
 
