@@ -56,7 +56,7 @@ jobs:
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size ${{ env.DROPLET_SIZE }} \
-            --image ${{ env.DROPLET_IAMGE }} \
+            --image ${{ env.DROPLET_IMAGE }} \
             --region ${{ env.DROPLET_REGION }} \
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
             --user-data '#!/bin/bash
