@@ -138,6 +138,8 @@ jobs:
             if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
               rm -f /home/${{ env.APP_USER }}/droplet-config.yml
             fi
+          debug: true
+          args: "-v" # Add verbosity for debug output
 
       - name: Copy Configuration File to Droplet
         uses: appleboy/scp-action@v0.1.1
