@@ -82,7 +82,6 @@ jobs:
           APP_USER=${{ env.APP_USER }} \
           GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
           envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
-          ls -lan
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size ${{ env.DROPLET_SIZE }} \
             --image ${{ env.DROPLET_IMAGE }} \
