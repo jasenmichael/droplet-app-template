@@ -30,7 +30,7 @@ jobs:
 
   create-droplet:
     runs-on: ubuntu-latest
-    needs: load-vars
+    needs: setup
 
     steps:
       - name: Download vars.env artifact
@@ -155,7 +155,7 @@ jobs:
   echo-vars:
     runs-on: ubuntu-latest
     needs:
-      - load-vars
+      - setup
       - create-droplet
 
     steps:
