@@ -136,6 +136,10 @@ jobs:
               rm -f ${{ env.PLAYBOOK_PATH }}
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
               curl -o ${{ env.PLAYBOOK_PATH }} ${{ env.PLAYBOOK_URL }}
+                if [ $? -ne 0 ]; then
+                  echo "Error downloading playbook from ${{ env.PLAYBOOK_URL }}"
+                  exit 1
+                fi
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
