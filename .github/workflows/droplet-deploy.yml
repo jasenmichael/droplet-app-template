@@ -60,61 +60,68 @@ jobs:
             --region ${{ env.DROPLET_REGION }} \
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
             --user-data '#!/bin/bash
-                          sudo apt-get update -y
-                          sudo apt-get upgrade -y
-                          sudo apt install -y ansible nginx certbot python3-certbot-nginx
-                          # Create APP_USER user
-                          useradd -m -U -s /bin/bash ${{ env.APP_USER }}
-                          usermod -aG sudo ${{ env.APP_USER }}
-                          # Set up SSH for APP_USER user
-                          mkdir -p /home/${{ env.APP_USER }}/.ssh
-                          echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/${{ env.APP_USER }}/.ssh/authorized_keys
-                          chmod 700 /home/${{ env.APP_USER }}/.ssh
-                          chmod 600 /home/${{ env.APP_USER }}/.ssh/authorized_keys
-                          chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} /home/${{ env.APP_USER }}/.ssh
-                          echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-                          echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-                          echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers'
-                          
-                          # Nginx and SSL Configuration
-                          sudo systemctl enable nginx
-                          sudo systemctl start nginx
-                          
-                          # Redirect HTTP to HTTPS
-                          cat <<EOF > /etc/nginx/sites-available/default
-                          server {
-                              listen 80;
-                              server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
-                              return 301 https://\$host\$request_uri;
-                          }
+              # Update and upgrade the system
+              sudo apt-get update -y
+              sudo apt-get upgrade -y
 
-                          server {
-                              listen 443 ssl;
-                              server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
+              # Install necessary packages
+              sudo apt install -y ansible nginx certbot python3-certbot-nginx
 
-                              ssl_certificate /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/fullchain.pem;
-                              ssl_certificate_key /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/privkey.pem;
-                              ssl_protocols TLSv1.2 TLSv1.3;
-                              ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256';
-                              ssl_prefer_server_ciphers off;
+              # Create APP_USER user
+              useradd -m -U -s /bin/bash ${{ env.APP_USER }}
+              usermod -aG sudo ${{ env.APP_USER }}
 
-                              root /var/www/html;
-                              index index.html index.htm index.nginx-debian.html;
+              # Set up SSH for APP_USER user
+              mkdir -p /home/${{ env.APP_USER }}/.ssh
+              echo "${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" > /home/${{ env.APP_USER }}/.ssh/authorized_keys
+              chmod 700 /home/${{ env.APP_USER }}/.ssh
+              chmod 600 /home/${{ env.APP_USER }}/.ssh/authorized_keys
+              chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} /home/${{ env.APP_USER }}/.ssh
 
-                              location / {
-                                  try_files \$uri \$uri/ =404;
-                              }
-                          }
-                          EOF
-                          
-                          # Install Certbot and obtain SSL certificates
-                          certbot --nginx -d ${{ env.DROPLET_IP }} --agree-tos --non-interactive --email youremail@example.com
-                          
-                          # Enable automatic SSL renewal
-                          echo "0 0 * * * root certbot renew --quiet" >> /etc/crontab
-                          
-                          # Restart Nginx to apply SSL
-                          sudo systemctl restart nginx' \
+              # Configure sudoers file
+              echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+              echo "root ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+              echo "${{ env.APP_USER }} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+              # Enable and start nginx
+              sudo systemctl enable nginx
+              sudo systemctl start nginx
+
+              # Redirect HTTP to HTTPS and configure SSL
+              cat <<EOF > /etc/nginx/sites-available/default
+              server {
+                  listen 80;
+                  server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
+                  return 301 https://\$host\$request_uri;
+              }
+
+              server {
+                  listen 443 ssl;
+                  server_name ${{ env.DROPLET_IP }}; # Update with your droplet's IP address or domain
+
+                  ssl_certificate /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/fullchain.pem;
+                  ssl_certificate_key /etc/letsencrypt/live/$${{ env.DROPLET_IP }}/privkey.pem;
+                  ssl_protocols TLSv1.2 TLSv1.3;
+                  ssl_ciphers 'TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256';
+                  ssl_prefer_server_ciphers off;
+
+                  root /var/www/html;
+                  index index.html index.htm index.nginx-debian.html;
+
+                  location / {
+                      try_files \$uri \$uri/ =404;
+                  }
+              }
+              EOF
+
+              # Install Certbot and obtain SSL certificates
+              certbot --nginx -d ${{ env.DROPLET_IP }} --agree-tos --non-interactive --email youremail@example.com
+
+              # Enable automatic SSL renewal
+              echo "0 0 * * * root certbot renew --quiet" >> /etc/crontab
+
+              # Restart Nginx to apply SSL
+              sudo systemctl restart nginx' \
             --wait
 
       - name: Get Droplet IP Address
