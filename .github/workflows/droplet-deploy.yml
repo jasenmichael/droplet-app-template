@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Load Ansible Vars into Environment and Save to .env File
+      - name: Load Ansible Vars .env File
         run: |
           sed '/^#/d' droplet-config.yml | sed -e 's/: /=/' > vars.env
           cat vars.env
@@ -36,9 +36,7 @@ jobs:
 
       - name: Load vars.env into Environment
         run: |
-          set -o allexport
-          source vars.env
-          set +o allexport
+          cat vars.env >> $GITHUB_ENV
 
       - name: Checkout code
         uses: actions/checkout@v3
@@ -164,9 +162,7 @@ jobs:
 
       - name: Load vars.env into Environment
         run: |
-          set -o allexport
-          source vars.env
-          set +o allexport
+          cat vars.env >> $GITHUB_ENV
 
       - name: echo an env for testing
         run: |
