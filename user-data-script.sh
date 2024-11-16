@@ -4,7 +4,7 @@ trap 'on_error' ERR
 
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
-  echo "fail" >/var/log/provision-droplet-command.log
+  echo "fail" >/var/log/provision-droplet-init.log
   exit 1
 }
 
@@ -35,4 +35,4 @@ echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 apt-get update -y
 apt install ansible -y
 
-echo "succeed" >/var/log/provision-droplet-command.log
+echo "succeed" >/var/log/provision-droplet-init.log
