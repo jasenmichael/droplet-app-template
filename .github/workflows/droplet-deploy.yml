@@ -113,18 +113,18 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
 
           # validate can ssh
-          ssh -o BatchMode=yes -o ConnectTimeout=10 root@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
           echo "Re-provision droplet base image (./user-data-script-ready.sh)"
           script_contents=$(cat ./user-data-script-ready.sh)
           doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user root \
+            --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "$script_contents"
 
           # validate init script succeeded
           doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user root \
+            --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
