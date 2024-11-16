@@ -63,6 +63,7 @@ jobs:
         id: droplet_info
         run: |
           doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
+          envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
           droplet_exists=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} && echo "true" || echo "false")
           if [ "$droplet_exists" == "false" ]; then
@@ -70,15 +71,28 @@ jobs:
             echo "Droplet not found"
           else
             echo "droplet_exists=true" >> $GITHUB_ENV
-            echo "Droplet exists"
-          fi
+            echo 'Droplet "${{ secrets.DROPLET_NAME }}" exists'
+            
+            echo "Re-provision droplet base image (./user-data-script-ready.sh)"
+            script_contents=$(cat./user-data-script-ready.sh)
+            doctl compute ssh ${{ secrets.DROPLET_NAME }} \
+              --ssh-user ${{ secrets.DROPLET_USER }} \
+              --ssh-key-path ~/.ssh/id_rsa \
+              --ssh-command "$script_contents"
 
-      - name: Create Droplet if not exists
+            # validate init script succeeded
+            doctl compute ssh ${{ secrets.DROPLET_NAME }} \
+              --ssh-user ${{ secrets.DROPLET_USER }} \
+              --ssh-key-path ~/.ssh/id_rsa \
+              --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
+
+           fi
+
+      - name: Create Droplet and provision base image (if not exists)
         if: ${{ env.droplet_exists == 'false' }}
         run: |
           APP_USER=${{ env.APP_USER }} \
           GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
-          envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size ${{ env.DROPLET_SIZE }} \
             --image ${{ env.DROPLET_IMAGE }} \
@@ -86,6 +100,12 @@ jobs:
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
             --user-data-file ./user-data-script-ready.sh \
             --wait
+
+          # validate init script succeeded
+          doctl compute ssh ${{ secrets.DROPLET_NAME }} \
+            --ssh-user ${{ secrets.DROPLET_USER }} \
+            --ssh-key-path ~/.ssh/id_rsa \
+            --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
       - name: Get Droplet IP Address
         id: droplet_ip
