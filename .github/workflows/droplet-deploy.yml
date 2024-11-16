@@ -69,7 +69,10 @@ jobs:
         id: droplet_info
         run: |
           doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
+          APP_USER=${{ env.APP_USER }} \
+          GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
           envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
+
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
           droplet_exists=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} && echo "true" || echo "false")
           if [ "$droplet_exists" == "false" ]; then
@@ -83,8 +86,6 @@ jobs:
       - name: Create droplet and provision base image (if not exists)
         if: ${{ env.droplet_exists == 'false' }}
         run: |
-          APP_USER=${{ env.APP_USER }} \
-          GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size ${{ env.DROPLET_SIZE }} \
             --image ${{ env.DROPLET_IMAGE }} \
