@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Not running as root. Switching to root..."
+  exec sudo -i
+fi
+
 trap 'on_error' ERR
 
 on_error() {
@@ -9,11 +14,6 @@ on_error() {
 }
 
 mkdir -p /var/log
-
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Not running as root. Switching to root..."
-  exec sudo -i
-fi
 
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER} || true
