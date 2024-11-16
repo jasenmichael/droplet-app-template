@@ -105,7 +105,7 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          chmod 640 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
           ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
