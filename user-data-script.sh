@@ -1,5 +1,15 @@
 #!/bin/bash
 
+trap 'on_error' ERR
+
+on_error() {
+  echo "Error: Command failed with exit code $?. Exiting script..."
+  echo "fail" >/var/log/provision-droplet-command.log
+  exit 1
+}
+
+mkdir -p /var/log
+
 if [ "$(id -u)" -ne 0 ]; then
   echo "Not running as root. Switching to root..."
   sudo su
@@ -25,5 +35,4 @@ echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 apt-get update -y
 apt install ansible -y
 
-mkdir -p /var/log
 echo "succeed" >/var/log/provision-droplet-command.log
