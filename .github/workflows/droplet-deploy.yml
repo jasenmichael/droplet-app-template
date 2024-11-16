@@ -131,9 +131,9 @@ jobs:
           username: ${{ env.APP_USER }}
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           script: |
-            echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
-            echo APP_PATH: ${{ env.APP_PATH }}
-            echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
+            # echo PLAYBOOK_PATH: ${{ env.PLAYBOOK_PATH }}
+            # echo APP_PATH: ${{ env.APP_PATH }}
+            # echo PLAYBOOK_URL: ${{ env.PLAYBOOK_URL }}
             if [ -n "${{ env.PLAYBOOK_URL }}" ]; then
               echo "Downloading playbook from ${{ env.PLAYBOOK_URL }}"
               rm -f ${{ env.PLAYBOOK_PATH }} 2> /dev/null
@@ -141,7 +141,7 @@ jobs:
             else
               echo "PLAYBOOK_URL not provided, skipping download"
             fi
-            git config --global --add safe.directory ${{ env.APP_PATH }}
+            # git config --global --add safe.directory ${{ env.APP_PATH }}
             git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
             sudo chown -R ${{ env.APP_USER }}:${{ env.APP_USER }} ${{ env.APP_PATH }}
             if [ -f "${{ env.PLAYBOOK_PATH }}" ]; then
@@ -151,22 +151,22 @@ jobs:
               exit 1
             fi
 
-  echo-vars:
-    runs-on: ubuntu-latest
-    needs:
-      - setup
-      - create-droplet
+  # echo-vars:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - setup
+  #     - create-droplet
 
-    steps:
-      - name: Download vars.env artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: vars-env
+  #   steps:
+  #     - name: Download vars.env artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: vars-env
 
-      - name: Load vars.env into Environment
-        run: |
-          cat vars.env >> $GITHUB_ENV
+  #     - name: Load vars.env into Environment
+  #       run: |
+  #         cat vars.env >> $GITHUB_ENV
 
-      - name: echo an env for testing
-        run: |
-          echo "DROPLET_NAME: ${{ env.DROPLET_NAME }}"
+  #     - name: echo an env for testing
+  #       run: |
+  #         echo "DROPLET_NAME: ${{ env.DROPLET_NAME }}"
