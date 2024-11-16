@@ -124,7 +124,7 @@ jobs:
           doctl compute ssh ${{ env.DROPLET_NAME }} \
             --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "$script_contents"
+            --ssh-command "sudo $script_contents"
 
           # validate init script succeeded
           doctl compute ssh ${{ env.DROPLET_NAME }} \

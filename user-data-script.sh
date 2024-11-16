@@ -15,12 +15,12 @@ mkdir -p /home/${APP_USER}/log
 touch /home/${APP_USER}/log/provision-droplet-init.log || true
 
 # Check if the current user is root, if not, switch to root and preserve the script execution
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Not running as root. Switching to root..."
-  # sudo su - root -c "/bin/bash --login"
-  # exec sudo -E bash "$0" "$@"
-  sudo -s
-fi
+# if [ "$(id -u)" -ne 0 ]; then
+#   echo "Not running as root. Switching to root..."
+#   # sudo su - root -c "/bin/bash --login"
+#   # exec sudo -E bash "$0" "$@"
+#   sudo -s
+# fi
 
 # Main script logic
 # Create APP_USER user (ensure it does not fail if user exists)
