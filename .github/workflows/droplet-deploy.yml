@@ -107,30 +107,30 @@ jobs:
             echo "droplet_ip=$droplet_ip" >> vars.env
           fi
 
-      # - name: Re-provision droplet base image (if exists)
-      #   if: ${{ env.droplet_exists == 'true' }}
-      #   run: |
-      #     mkdir -p ~/.ssh
-      #     echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-      #     chmod 600 ~/.ssh/id_rsa
-      #     ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
-      #     chmod 644 ~/.ssh/known_hosts
+      - name: Re-provision droplet base image (if exists)
+        if: ${{ env.droplet_exists == 'true' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-      #     # validate can ssh
-      #     ssh -o BatchMode=yes -o ConnectTimeout=10 root@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+          # validate can ssh
+          ssh -o BatchMode=yes -o ConnectTimeout=10 root@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
-      #     echo "Re-provision droplet base image (./user-data-script-ready.sh)"
-      #     script_contents=$(cat ./user-data-script-ready.sh)
-      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #       --ssh-user root \
-      #       --ssh-key-path ~/.ssh/id_rsa \
-      #       --ssh-command "$script_contents"
+        #     echo "Re-provision droplet base image (./user-data-script-ready.sh)"
+        #     script_contents=$(cat ./user-data-script-ready.sh)
+        #     doctl compute ssh ${{ env.DROPLET_NAME }} \
+        #       --ssh-user root \
+        #       --ssh-key-path ~/.ssh/id_rsa \
+        #       --ssh-command "$script_contents"
 
-      #     # validate init script succeeded
-      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #       --ssh-user root \
-      #       --ssh-key-path ~/.ssh/id_rsa \
-      #       --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
+        # validate init script succeeded
+        # doctl compute ssh ${{ env.DROPLET_NAME }} \
+        #   --ssh-user root \
+        #   --ssh-key-path ~/.ssh/id_rsa \
+        #   --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
