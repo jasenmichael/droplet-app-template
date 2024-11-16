@@ -103,14 +103,18 @@ jobs:
           else
             echo "Droplet IP found: $droplet_ip"
             echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+            echo "droplet_ip=$droplet_ip" >> vars.env
           fi
 
       - name: Re-provision droplet base image (if exists)
         if: ${{ env.droplet_exists == 'true' }}
         run: |
-          ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ secrets.DROPLET_USER }}@${{ env.DROPLET_IP }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+
+          # validate can ssh
+          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+
           echo "Re-provision droplet base image (./user-data-script-ready.sh)"
           script_contents=$(cat ./user-data-script-ready.sh)
           doctl compute ssh ${{ env.DROPLET_NAME }} \
