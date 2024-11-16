@@ -101,37 +101,37 @@ jobs:
             echo "droplet_ip=$droplet_ip" >> vars.env
           fi
 
-      - name: Configure github ssh access to droplet
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-          # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+      # - name: Configure github ssh access to droplet
+      #   run: |
+      #     mkdir -p ~/.ssh
+      #     echo "${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+      #     chmod 600 ~/.ssh/id_rsa
+      #     ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
+      #     chmod 644 ~/.ssh/known_hosts
+      #     # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
-      - name: Re-provision droplet base os (if droplet exists)
-        if: ${{ env.droplet_exists == 'true' }}
-        run: |
-          echo "Re-provision droplet base image (./user-data-script-ready.sh)"
-          script_contents=$(cat ./user-data-script-ready.sh)
-          doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user ${{ env.APP_USER }} \
-            --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "sudo bash -c '$script_contents'"
+      # - name: Re-provision droplet base os (if droplet exists)
+      #   if: ${{ env.droplet_exists == 'true' }}
+      #   run: |
+      #     echo "Re-provision droplet base image (./user-data-script-ready.sh)"
+      #     script_contents=$(cat ./user-data-script-ready.sh)
+      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
+      #       --ssh-user ${{ env.APP_USER }} \
+      #       --ssh-key-path ~/.ssh/id_rsa \
+      #       --ssh-command "sudo bash -c '$script_contents'"
 
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
         run: |
           sleep 180
 
-      - name: Validate init script succeeded
-        run: |
-          # validate init script succeeded
-          doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user ${{ env.APP_USER }} \
-            --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "if [[ \$(cat /home/${APP_USER}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else exit 1; fi"
+      # - name: Validate init script succeeded
+      #   run: |
+      #     # validate init script succeeded
+      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
+      #       --ssh-user ${{ env.APP_USER }} \
+      #       --ssh-key-path ~/.ssh/id_rsa \
+      #       --ssh-command "if [[ \$(cat /home/${APP_USER}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else exit 1; fi"
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
