@@ -11,7 +11,7 @@ touch /home/${APP_USER}/log/provision-droplet-init.log || true
 trap 'on_error' ERR
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
-  echo "fail" | tee /home/${APP_USER}/log/provision-droplet-init.log >/dev/null
+  echo "fail" >/home/${APP_USER}/log/provision-droplet-init.log
   exit 1
 }
 
@@ -36,4 +36,4 @@ echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 apt-get update -y
 apt install ansible -y
 
-echo "succeed" | sudo tee /home/${APP_USER}/log/provision-droplet-init.log >/dev/null
+echo "succeed" >/home/${APP_USER}/log/provision-droplet-init.log
