@@ -74,7 +74,7 @@ jobs:
             echo 'Droplet "${{ env.DROPLET_NAME }}" exists'
             
             echo "Re-provision droplet base image (./user-data-script-ready.sh)"
-            script_contents=$(cat./user-data-script-ready.sh)
+            script_contents=$(cat ./user-data-script-ready.sh)
             doctl compute ssh ${{ env.DROPLET_NAME }} \
               --ssh-user ${{ env.APP_USER }} \
               --ssh-key-path ~/.ssh/id_rsa \
