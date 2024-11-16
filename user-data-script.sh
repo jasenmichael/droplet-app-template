@@ -12,13 +12,12 @@ mkdir -p /var/log
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Not running as root. Switching to root..."
-  sudo su
+  exec sudo -i
 fi
 
 # Create APP_USER user
-if ! id "${APP_USER}" &>/dev/null; then
-  useradd -m -U -s /bin/bash ${APP_USER}
-fi
+useradd -m -U -s /bin/bash ${APP_USER} || true
+
 # useradd -m -U -s /bin/bash ${APP_USER}
 usermod -aG sudo ${APP_USER}
 
