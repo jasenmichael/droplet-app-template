@@ -61,12 +61,12 @@ jobs:
 
       - name: Configure Github ssh access to droplet
         run: |
-          doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
           mkdir -p ~/.ssh
           echo "${{ secrets.DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          # ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
+          # chmod 644 ~/.ssh/known_hosts
+          # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ secrets.DROPLET_USER }}@${{ env.DROPLET_IP }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
       - name: Get droplet info (Check if droplet with name exists)
         id: droplet_info
