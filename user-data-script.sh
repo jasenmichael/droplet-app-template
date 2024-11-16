@@ -1,33 +1,33 @@
 #!/bin/bash
 
-# Log files
-COMMAND_LOG_FILE="/var/log/provision-droplet-command-log"
-INIT_LOG_FILE="/var/log/provision-droplet-init-log"
-COMMAND_COUNT=0
+# # Log files
+# COMMAND_LOG_FILE="/var/log/provision-droplet-command-log"
+# INIT_LOG_FILE="/var/log/provision-droplet-init-log"
+# COMMAND_COUNT=0
 
-touch "$COMMAND_LOG_FILE" || true
-touch "$INIT_LOG_FILE" || true
+# touch "$COMMAND_LOG_FILE" || true
+# touch "$INIT_LOG_FILE" || true
 
-# Function to log the last command
-log_command() {
-  ((COMMAND_COUNT++))
-  local cmd_status=$?
+# # Function to log the last command
+# log_command() {
+#   ((COMMAND_COUNT++))
+#   local cmd_status=$?
 
-  # Log the command and status
-  echo "Command ${COMMAND_COUNT}: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
-  echo "----------------------------------------------------" | tee -a "$COMMAND_LOG_FILE"
+#   # Log the command and status
+#   echo "Command ${COMMAND_COUNT}: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
+#   echo "----------------------------------------------------" | tee -a "$COMMAND_LOG_FILE"
 
-  if [ $cmd_status -ne 0 ]; then
-    echo "Command ${COMMAND_COUNT} failed: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
-    echo "failed" >"$INIT_LOG_FILE"
-    exit $cmd_status
-  else
-    echo "Command ${COMMAND_COUNT} succeeded: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
-  fi
-}
+#   if [ $cmd_status -ne 0 ]; then
+#     echo "Command ${COMMAND_COUNT} failed: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
+#     echo "failed" >"$INIT_LOG_FILE"
+#     exit $cmd_status
+#   else
+#     echo "Command ${COMMAND_COUNT} succeeded: ${BASH_COMMAND:-"Unknown command"}" | tee -a "$COMMAND_LOG_FILE"
+#   fi
+# }
 
-# Trap to run log_command after each command
-trap log_command DEBUG
+# # Trap to run log_command after each command
+# trap log_command DEBUG
 
 # Start the provisioning script
 
