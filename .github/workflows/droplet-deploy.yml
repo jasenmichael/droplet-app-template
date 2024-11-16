@@ -116,7 +116,7 @@ jobs:
             fi
 
       - name: Copy Configuration File to Droplet
-        uses: appleboy/scp-action@v0.1.1
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ env.droplet_ip }}
           username: ${{ env.APP_USER }}
