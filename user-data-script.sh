@@ -5,9 +5,6 @@ if [ "$(id -u)" -ne 0 ]; then
   exec sudo -i
 fi
 
-mkdir -p /home/${APP_USER}/log/ || true
-touch /home/${APP_USER}/log/provision-droplet-init.log || true
-
 trap 'on_error' ERR
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
@@ -17,9 +14,10 @@ on_error() {
 
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER} || true
-
-# useradd -m -U -s /bin/bash ${APP_USER}
 usermod -aG sudo ${APP_USER}
+
+mkdir -p /home/${APP_USER}/log/ || true
+touch /home/${APP_USER}/log/provision-droplet-init.log || true
 
 # Set up SSH for APP_USER user
 mkdir -p /home/${APP_USER}/.ssh
