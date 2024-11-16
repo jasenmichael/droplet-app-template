@@ -1,7 +1,7 @@
 #!/bin/bash
 
 apt-get update -y
-apt-get upgrade -y
+# apt-get upgrade -y
 apt install ansible git -y
 
 # Create APP_USER user
