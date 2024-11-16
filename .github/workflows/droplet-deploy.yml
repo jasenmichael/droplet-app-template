@@ -64,9 +64,6 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.DROPLET_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          # ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
-          # chmod 644 ~/.ssh/known_hosts
-          # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ secrets.DROPLET_USER }}@${{ env.DROPLET_IP }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
       - name: Get droplet info (Check if droplet with name exists)
         id: droplet_info
@@ -81,23 +78,9 @@ jobs:
           else
             echo "droplet_exists=true" >> $GITHUB_ENV
             echo 'Droplet "${{ env.DROPLET_NAME }}" exists'
-            
-            echo "Re-provision droplet base image (./user-data-script-ready.sh)"
-            script_contents=$(cat ./user-data-script-ready.sh)
-            doctl compute ssh ${{ env.DROPLET_NAME }} \
-              --ssh-user root \
-              --ssh-key-path ~/.ssh/id_rsa \
-              --ssh-command "$script_contents"
-
-            # validate init script succeeded
-            doctl compute ssh ${{ env.DROPLET_NAME }} \
-              --ssh-user root \
-              --ssh-key-path ~/.ssh/id_rsa \
-              --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
-
            fi
 
-      - name: Create Droplet and provision base image (if not exists)
+      - name: Create droplet and provision base image (if not exists)
         if: ${{ env.droplet_exists == 'false' }}
         run: |
           APP_USER=${{ env.APP_USER }} \
@@ -109,6 +92,19 @@ jobs:
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
             --user-data-file ./user-data-script-ready.sh \
             --wait
+
+      - name: Re-provision droplet base image (if exists)
+        if: ${{ env.droplet_exists == 'true' }}
+        run: |
+          ssh-keyscan -H ${{ env.DROPLET_IP }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ secrets.DROPLET_USER }}@${{ env.DROPLET_IP }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+          echo "Re-provision droplet base image (./user-data-script-ready.sh)"
+          script_contents=$(cat ./user-data-script-ready.sh)
+          doctl compute ssh ${{ env.DROPLET_NAME }} \
+            --ssh-user root \
+            --ssh-key-path ~/.ssh/id_rsa \
+            --ssh-command "$script_contents"
 
           # validate init script succeeded
           doctl compute ssh ${{ env.DROPLET_NAME }} \
