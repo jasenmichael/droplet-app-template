@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Not running as root. Switching to root..."
+  sudo su
+  exit 0
+fi
+
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER}
 usermod -aG sudo ${APP_USER}
