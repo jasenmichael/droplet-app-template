@@ -138,7 +138,8 @@ jobs:
         with:
           host: ${{ env.droplet_ip }}
           username: ${{ env.APP_USER }}
-          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+          # key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+          key_path: ~/.ssh/id_rsa
           script: |
             if [ -f "/home/${{ env.APP_USER }}/droplet-config.yml" ]; then
               rm -f /home/${{ env.APP_USER }}/droplet-config.yml 2> /dev/null
