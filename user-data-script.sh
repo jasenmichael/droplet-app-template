@@ -16,5 +16,5 @@ echo "%sudo ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 echo "root ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 
-apt-get update -y
-apt install ansible -y
+# apt-get update -y
+# apt install ansible -y
