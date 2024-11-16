@@ -7,13 +7,14 @@ fi
 
 trap 'on_error' ERR
 
+mkdir -p /var/log || true
+touch /var/log/provision-droplet-init.log || true
+
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
   echo "fail" >/var/log/provision-droplet-init.log
   exit 1
 }
-
-mkdir -p /var/log
 
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER} || true
