@@ -5,13 +5,13 @@ if [ "$(id -u)" -ne 0 ]; then
   exec sudo -i
 fi
 
-mkdir -p /var/log || true
-touch /var/log/provision-droplet-init.log || true
+mkdir -p /home/${APP_USER}/log/ || true
+touch /home/${APP_USER}/log/provision-droplet-init.log || true
 
 trap 'on_error' ERR
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
-  echo "fail" | sudo tee /var/log/provision-droplet-init.log >/dev/null
+  echo "fail" | tee /home/${APP_USER}/log/provision-droplet-init.log >/dev/null
   exit 1
 }
 
@@ -36,4 +36,4 @@ echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 apt-get update -y
 apt install ansible -y
 
-echo "succeed" | sudo tee /var/log/provision-droplet-init.log >/dev/null
+echo "succeed" | sudo tee /home/${APP_USER}/log/provision-droplet-init.log >/dev/null
