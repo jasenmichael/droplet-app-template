@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p /home/${APP_USER}/log
+touch /home/${APP_USER}/log/provision-droplet-init.log || true
+
 if [ "$(id -u)" -ne 0 ]; then
   echo "Not running as root. Switching to root..."
   exec sudo -i
@@ -15,9 +18,6 @@ on_error() {
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER} || true
 usermod -aG sudo ${APP_USER}
-
-mkdir -p /home/${APP_USER}/log/ || true
-touch /home/${APP_USER}/log/provision-droplet-init.log || true
 
 # Set up SSH for APP_USER user
 mkdir -p /home/${APP_USER}/.ssh
