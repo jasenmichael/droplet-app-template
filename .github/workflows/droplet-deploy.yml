@@ -126,7 +126,7 @@ jobs:
           key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
-          use_insecure_cipher: true
+          # use_insecure_cipher: true
 
       - name: Configure github ssh access to droplet
         run: |
