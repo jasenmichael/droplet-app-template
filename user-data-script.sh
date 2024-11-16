@@ -52,4 +52,4 @@ apt-get update -y
 apt install ansible -y
 
 # If the script reaches this point, mark success
-echo "succeed" >"$INIT_LOG_FILE"
+# echo "succeed" >"$INIT_LOG_FILE"
