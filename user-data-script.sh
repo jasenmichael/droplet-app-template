@@ -1,10 +1,7 @@
 #!/bin/bash
 
-echo "APP_USER $APP_USER"
-echo "GH_TO_DROPLET_PUBLIC_KEY $GH_TO_DROPLET_PUBLIC_KEY"
-ls -lan .
-
 apt-get update -y
+apt-get upgrade -y
 apt install ansible -y
 
 # Create APP_USER user

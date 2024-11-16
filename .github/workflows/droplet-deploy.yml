@@ -20,7 +20,6 @@ jobs:
       - name: Load Ansible Vars .env File
         run: |
           sed '/^#/d' droplet-config.yml | sed -e 's/: /=/' > vars.env
-          cat vars.env
 
       - name: Upload .env as Artifact
         uses: actions/upload-artifact@v4
