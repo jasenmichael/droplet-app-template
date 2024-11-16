@@ -13,7 +13,6 @@ mkdir -p /var/log
 if [ "$(id -u)" -ne 0 ]; then
   echo "Not running as root. Switching to root..."
   sudo su
-  exit 0
 fi
 
 # Create APP_USER user
