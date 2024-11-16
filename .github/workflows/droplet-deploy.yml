@@ -149,8 +149,7 @@ jobs:
         with:
           host: ${{ env.droplet_ip }}
           username: ${{ env.APP_USER }}
-          # key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
-          key_path: ~/.ssh/id_rsa
+          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
 
