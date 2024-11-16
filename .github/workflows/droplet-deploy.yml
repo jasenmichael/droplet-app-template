@@ -93,6 +93,18 @@ jobs:
             --user-data-file ./user-data-script-ready.sh \
             --wait
 
+      - name: Get Droplet IP Address
+        id: droplet_ip
+        run: |
+          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+          if [ -z "$droplet_ip" ]; then
+            echo "Droplet IP not found"
+            exit 1
+          else
+            echo "Droplet IP found: $droplet_ip"
+            echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+          fi
+
       - name: Re-provision droplet base image (if exists)
         if: ${{ env.droplet_exists == 'true' }}
         run: |
@@ -111,18 +123,6 @@ jobs:
             --ssh-user root \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
-
-      - name: Get Droplet IP Address
-        id: droplet_ip
-        run: |
-          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
-          if [ -z "$droplet_ip" ]; then
-            echo "Droplet IP not found"
-            exit 1
-          else
-            echo "Droplet IP found: $droplet_ip"
-            echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
-          fi
 
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
