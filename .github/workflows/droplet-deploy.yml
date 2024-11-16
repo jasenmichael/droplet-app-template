@@ -71,18 +71,18 @@ jobs:
             echo "Droplet not found"
           else
             echo "droplet_exists=true" >> $GITHUB_ENV
-            echo 'Droplet "${{ secrets.DROPLET_NAME }}" exists'
+            echo 'Droplet "${{ env.DROPLET_NAME }}" exists'
             
             echo "Re-provision droplet base image (./user-data-script-ready.sh)"
             script_contents=$(cat./user-data-script-ready.sh)
-            doctl compute ssh ${{ secrets.DROPLET_NAME }} \
-              --ssh-user ${{ secrets.DROPLET_USER }} \
+            doctl compute ssh ${{ env.DROPLET_NAME }} \
+              --ssh-user ${{ env.APP_USER }} \
               --ssh-key-path ~/.ssh/id_rsa \
               --ssh-command "$script_contents"
 
             # validate init script succeeded
-            doctl compute ssh ${{ secrets.DROPLET_NAME }} \
-              --ssh-user ${{ secrets.DROPLET_USER }} \
+            doctl compute ssh ${{ env.DROPLET_NAME }} \
+              --ssh-user ${{ env.APP_USER }} \
               --ssh-key-path ~/.ssh/id_rsa \
               --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
@@ -102,8 +102,8 @@ jobs:
             --wait
 
           # validate init script succeeded
-          doctl compute ssh ${{ secrets.DROPLET_NAME }} \
-            --ssh-user ${{ secrets.DROPLET_USER }} \
+          doctl compute ssh ${{ env.DROPLET_NAME }} \
+            --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
