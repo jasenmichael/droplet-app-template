@@ -18,3 +18,6 @@ echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 
 apt-get update -y
 apt install ansible -y
+
+mkdir -p /var/log
+echo "succeed" >/var/log/provision-droplet-command.log
