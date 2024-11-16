@@ -1,8 +1,5 @@
 #!/bin/bash
 
-apt-get update -y
-apt install ansible -y
-
 # Create APP_USER user
 useradd -m -U -s /bin/bash ${APP_USER}
 usermod -aG sudo ${APP_USER}
@@ -18,3 +15,6 @@ chown -R ${APP_USER}:${APP_USER} /home/${APP_USER}/.ssh
 echo "%sudo ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 echo "root ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
 echo "${APP_USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers
+
+apt-get update -y
+apt install ansible -y
