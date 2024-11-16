@@ -18,8 +18,8 @@ touch /home/${APP_USER}/log/provision-droplet-init.log || true
 if [ "$(id -u)" -ne 0 ]; then
   echo "Not running as root. Switching to root..."
   # sudo su - root -c "/bin/bash --login"
-  exec sudo -E bash "$0" "$@"
-  # sudo -s
+  # exec sudo -E bash "$0" "$@"
+  sudo -s
 fi
 
 # Main script logic
