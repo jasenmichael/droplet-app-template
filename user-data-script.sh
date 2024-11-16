@@ -16,7 +16,10 @@ if [ "$(id -u)" -ne 0 ]; then
 fi
 
 # Create APP_USER user
-useradd -m -U -s /bin/bash ${APP_USER}
+if ! id "${APP_USER}" &>/dev/null; then
+  useradd -m -U -s /bin/bash ${APP_USER}
+fi
+# useradd -m -U -s /bin/bash ${APP_USER}
 usermod -aG sudo ${APP_USER}
 
 # Set up SSH for APP_USER user
