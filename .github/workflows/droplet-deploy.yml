@@ -130,7 +130,7 @@ jobs:
           doctl compute ssh ${{ env.DROPLET_NAME }} \
             --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "if [[ \$(cat /var/log/provision-droplet-init-log) == 'succeed' ]]; then exit 0; else exit 1; fi"
+            --ssh-command "if [[ \$(cat /var/log/provision-droplet-init.log) == 'succeed' ]]; then exit 0; else exit 1; fi"
 
       - name: Wait for newly created droplet to be ready for ssh connections
         if: ${{ env.droplet_exists == 'false' }}
