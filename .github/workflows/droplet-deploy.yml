@@ -82,8 +82,8 @@ jobs:
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
             --size ${{ env.DROPLET_SIZE }} \
-            --image ${{ env.DROPLET_IMAGE }} \
             --region ${{ env.DROPLET_REGION }} \
+            --image ${{ env.DROPLET_IMAGE }} \
             --ssh-keys ${{ env.DROPLET_SSH_KEYS }} \
             --user-data-file ./user-data-script-ready.sh \
             --wait
