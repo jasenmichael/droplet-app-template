@@ -77,7 +77,7 @@ jobs:
             echo 'Droplet "${{ env.DROPLET_NAME }}" exists'
            fi
 
-      - name: Create droplet and provision base image (if not exists)
+      - name: Create droplet and provision base os (if droplet does not exists)
         if: ${{ env.droplet_exists == 'false' }}
         run: |
           doctl compute droplet create ${{ env.DROPLET_NAME }} \
@@ -110,7 +110,7 @@ jobs:
           chmod 644 ~/.ssh/known_hosts
           # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
-      - name: Re-provision droplet base image (if exists)
+      - name: Re-provision droplet base os (if droplet exists)
         if: ${{ env.droplet_exists == 'true' }}
         run: |
           echo "Re-provision droplet base image (./user-data-script-ready.sh)"
@@ -153,7 +153,7 @@ jobs:
           source: droplet-config.yml
           target: /home/${{ env.APP_USER }}/
 
-      - name: Run Ansible Playbook
+      - name: Provision os for app with ansible-playbook
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ env.droplet_ip }}
