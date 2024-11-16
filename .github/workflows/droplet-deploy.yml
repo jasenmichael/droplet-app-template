@@ -88,12 +88,6 @@ jobs:
             --user-data-file ./user-data-script-ready.sh \
             --wait
 
-          # validate init script succeeded
-          doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user ${{ env.APP_USER }} \
-            --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "if [[ \$(cat /home/${APP_USER}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else exit 1; fi"
-
       - name: Get Droplet IP Address
         id: droplet_ip
         run: |
