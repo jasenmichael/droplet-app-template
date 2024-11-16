@@ -5,11 +5,10 @@ if [ "$(id -u)" -ne 0 ]; then
   exec sudo -i
 fi
 
-trap 'on_error' ERR
-
 mkdir -p /var/log || true
 touch /var/log/provision-droplet-init.log || true
 
+trap 'on_error' ERR
 on_error() {
   echo "Error: Command failed with exit code $?. Exiting script..."
   echo "fail" >/var/log/provision-droplet-init.log
