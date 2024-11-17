@@ -137,21 +137,9 @@ jobs:
               rm -f /home/${{ env.APP_USER }}/droplet-config.yml 2> /dev/null
             fi
 
-      # - name: Copy Configuration File to Droplet
-      #   uses: appleboy/scp-action@v0.1.7
-      #   with:
-      #     host: ${{ env.droplet_ip }}
-      #     username: ${{ env.APP_USER }}
-      #     key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
-      #     source: droplet-config.yml
-      #     target: /home/${{ env.APP_USER }}/
-      #     # use_insecure_cipher: true
-
       - name: Copy Configuration File to Droplet
         run: |
           scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no droplet-config.yml ${{ env.APP_USER }}@${{ env.droplet_ip }}:/home/${{ env.APP_USER }}/
-          # scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no droplet-config.yml ${{ env.APP_USER }}@${{ env.droplet_ip }}:/tmp/
-          # ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.APP_USER }}@${{ env.droplet_ip }} "sudo mv /tmp/droplet-config.yml /home/${APP_USER}/"
 
       - name: Re-provision droplet base os (if droplet exists)
         if: ${{ env.droplet_exists == 'true' }}
@@ -164,12 +152,55 @@ jobs:
             --ssh-command "sudo bash -c '$script_contents'"
 
       - name: Validate init script succeeded
+        id: validate_init
         run: |
-          # validate init script succeeded
-          doctl compute ssh ${{ env.DROPLET_NAME }} \
+          # Validate init script succeeded
+          init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
             --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "if [[ \$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else exit 1; fi"
+            --ssh-command "
+               log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
+               if [[ \$log_content == 'succeed' ]]; then
+                 init_succeed="true"
+                 echo 'init_succeed: true'
+                 exit 0
+               else
+                 init_succeed="false"
+                 echo 'init_succeed: false'
+                 exit 1
+               fi
+             " || echo "false"
+          echo "init_succeed=$init_succeed" >> $GITHUB_ENV
+
+      - name: Destroy newly created droplet if init script failed
+        if: ${{ env.droplet_exists == 'false' && env.init_succeed == 'false' }}
+        run: |
+          # Destroy the droplet by IP if the init script failed
+          echo "Droplet init script failed, destroying droplet by IP..."
+
+          # Get droplet ID by IP address
+          droplet_id=$(doctl compute droplet list --format ID,PublicIPv4 --no-header | grep ${{ env.droplet_ip }} | awk '{print $1}')
+
+          if [ -z "$droplet_id" ]; then
+            echo "Error: Droplet with IP ${{ env.droplet_ip }} not found."
+            exit 1
+          fi
+
+          # Delete the droplet by ID
+          doctl compute droplet delete $droplet_id --force --wait
+
+      # - name: Validate init script succeeded
+      #   run: |
+      #     # validate init script succeeded
+      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
+      #       --ssh-user ${{ env.APP_USER }} \
+      #       --ssh-key-path ~/.ssh/id_rsa \
+      #       --ssh-command "if [[ \$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else 'init script FAILED!' && exit 1; fi"
+
+      # - name: Destroy newly created droplet if init script failed
+      #   if: ${{ env.droplet_exists == 'false' }}
+      #   run: |
+      #     # doctl DESTROY DROPLET_NAME @ droplet_ip
 
       - name: Provision os for app with ansible-playbook
         uses: appleboy/ssh-action@v0.1.7
