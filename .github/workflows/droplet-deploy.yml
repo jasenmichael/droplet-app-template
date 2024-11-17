@@ -176,9 +176,8 @@ jobs:
               if [[ \$i -eq 12 ]]; then
                 echo 'false'
               fi
-            " || echo "false")
+            " && echo "true" || echo "false")
 
-          echo "init_succeed" $init_succeed" 
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
           echo "Init script validation: $init_succeed"
           exit 0
