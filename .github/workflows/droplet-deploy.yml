@@ -113,7 +113,7 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+          # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
