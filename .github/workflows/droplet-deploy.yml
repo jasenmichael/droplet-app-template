@@ -159,17 +159,16 @@ jobs:
             --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "
-               log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-               if [[ \$log_content == 'succeed' ]]; then
-                 init_succeed="true"
-                 echo 'init_succeed: true'
-                 exit 0
-               else
-                 init_succeed="false"
-                 echo 'init_succeed: false'
-                 exit 1
-               fi
-             " || echo "false"
+              log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
+              if [[ \$log_content == 'succeed' ]]; then
+                echo 'init_succeed: true'
+                exit 0
+              else
+                echo 'init_succeed: false'
+                exit 1
+              fi
+            " || echo "false")
+
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
 
       - name: Destroy newly created droplet if init script failed
@@ -188,6 +187,12 @@ jobs:
 
           # Delete the droplet by ID
           doctl compute droplet delete $droplet_id --force --wait
+
+      - name: Exit if init script failed
+        if: ${{ env.init_succeed == 'false' }}
+        run: |
+          echo "Droplet init script failed"
+          exit 1
 
       # - name: Validate init script succeeded
       #   run: |
