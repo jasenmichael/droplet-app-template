@@ -152,7 +152,7 @@ jobs:
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "sudo bash -c '$script_contents'"
 
-      - name: Validate init script succeeded with retries
+      - name: Validate init script succeeded
         run: |
           init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
             --ssh-user ${{ env.APP_USER }} \
@@ -169,7 +169,6 @@ jobs:
                     exit 0
                   fi
                 fi
-                echo \"Attempt \$i/12: Init log not found or invalid content. Retrying...\"
                 sleep 10
               done
 
@@ -177,7 +176,7 @@ jobs:
                 echo 'false'
                 exit 0
               fi
-            " || echo 'false' && exit 0)
+            " || exit 0)
 
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
           echo "Init script validation: $init_succeed"
