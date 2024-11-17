@@ -172,7 +172,7 @@ jobs:
 
             # Check if the file was found and break if so
             if [[ $init_succeed == "true" ]]; then
-              echo "Init script log file found or validation succeeded on attempt $i."
+              echo "Init script validation succeeded on attempt $i."
               break
             fi
 
@@ -183,7 +183,7 @@ jobs:
 
           # Set the result to GitHub environment
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
-          echo "Init script validation completed with status: $init_succeed."
+          echo "Init script validation: $init_succeed"
           exit 0
 
       # - name: Validate init script succeeded with retries
