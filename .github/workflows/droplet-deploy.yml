@@ -185,7 +185,7 @@ jobs:
           fi
 
           # Delete the droplet by ID
-          doctl compute droplet delete $droplet_id --force --wait
+          doctl compute droplet delete $droplet_id --force
 
       - name: Exit if init script failed
         if: ${{ env.init_succeed == 'false' }}
