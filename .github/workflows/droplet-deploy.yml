@@ -128,6 +128,13 @@ jobs:
           target: /home/${{ env.APP_USER }}/
           # use_insecure_cipher: true
 
+      - name: Copy Configuration File to Droplet
+        run: |
+          scp -i ~/.ssh/id_rsa \
+            -o StrictHostKeyChecking=no \
+            droplet-config.yml \
+            ${{ env.APP_USER }}@${{ env.droplet_ip }}:/home/${{ env.APP_USER }}/
+
       - name: Configure github ssh access to droplet
         run: |
           mkdir -p ~/.ssh
