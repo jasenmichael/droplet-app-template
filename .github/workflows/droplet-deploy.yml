@@ -161,10 +161,10 @@ jobs:
             --ssh-command "
               log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
               if [[ \$log_content == 'succeed' ]]; then
-                echo 'init_succeed: true'
+                echo 'true'
                 exit 0
               else
-                echo 'init_succeed: false'
+                echo 'false'
                 exit 1
               fi
             " || echo "false")
