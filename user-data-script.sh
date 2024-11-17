@@ -18,6 +18,7 @@ touch /home/${APP_USER}/log/provision-droplet-init.log || true
 # Create APP_USER user if user does not exists
 id -u "${APP_USER}" &>/dev/null || useradd -m -U -s /bin/bash "${APP_USER}"
 usermod -aG sudo "${APP_USER}"
+chmod 755 /home/${APP_USER}
 
 # Set up SSH for APP_USER user
 mkdir -p /home/${APP_USER}/.ssh
