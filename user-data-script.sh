@@ -38,7 +38,7 @@ apt-get update -y
 apt install ansible -y
 
 # configure ssh to accept +ssh-rsa
-echo "CASignatureAlgorithms +ssh-rsa" >>/etc/ssh/sshd_config
+# echo "CASignatureAlgorithms +ssh-rsa" >>/etc/ssh/sshd_config
 
 # Log success
 echo "failed" >/home/${APP_USER}/log/provision-droplet-init.log

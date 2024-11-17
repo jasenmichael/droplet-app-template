@@ -165,7 +165,7 @@ jobs:
                 exit 0
               else
                 echo 'false'
-                exit 1
+                exit 0
               fi
             " || echo "false")
 
