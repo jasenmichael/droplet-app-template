@@ -118,15 +118,15 @@ jobs:
               rm -f /home/${{ env.APP_USER }}/droplet-config.yml 2> /dev/null
             fi
 
-      - name: Copy Configuration File to Droplet
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ env.droplet_ip }}
-          username: ${{ env.APP_USER }}
-          key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
-          source: droplet-config.yml
-          target: /home/${{ env.APP_USER }}/
-          # use_insecure_cipher: true
+      # - name: Copy Configuration File to Droplet
+      #   uses: appleboy/scp-action@v0.1.7
+      #   with:
+      #     host: ${{ env.droplet_ip }}
+      #     username: ${{ env.APP_USER }}
+      #     key: ${{ secrets.GH_TO_DROPLET_PRIVATE_KEY }}
+      #     source: droplet-config.yml
+      #     target: /home/${{ env.APP_USER }}/
+      #     # use_insecure_cipher: true
 
       - name: Copy Configuration File to Droplet
         run: |
