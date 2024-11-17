@@ -35,7 +35,7 @@ chown -R ${APP_USER}:${APP_USER} /home/${APP_USER}/.ssh
 
 # Install necessary packages
 apt-get update -y
-apt install -y nginx certbot python3-certbot-nginx ansible
+apt install ansible -y
 
 # Log success
 echo "success" >/home/${APP_USER}/log/provision-droplet-init.log
