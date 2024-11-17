@@ -101,11 +101,6 @@ jobs:
             echo "droplet_ip=$droplet_ip" >> vars.env
           fi
 
-      - name: Wait for newly created droplet to be ready for ssh connections
-        if: ${{ env.droplet_exists == 'false' }}
-        run: |
-          sleep 180
-
       - name: Configure github ssh access to droplet
         run: |
           mkdir -p ~/.ssh
@@ -113,7 +108,22 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ env.droplet_ip }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
-          ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+
+      - name: Wait for newly created droplet to be ready for ssh connections
+        if: ${{ env.droplet_exists == 'false' }}
+        run: |
+          # sleep 180
+          # ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" || (echo "SSH connection failed" && exit 1)
+          for i in {1..18}; do
+            echo "Attempting to SSH into the droplet... (Attempt $i/18)"
+            ssh -o BatchMode=yes -o ConnectTimeout=10 ${{ env.APP_USER }}@${{ env.droplet_ip }} "echo SSH connection successful" && break
+            sleep 10
+          done
+
+          if [ $i -eq 18 ]; then
+            echo "Failed to connect to the droplet after 18 attempts. Exiting..."
+            exit 1
+          fi
 
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
