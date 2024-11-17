@@ -172,12 +172,11 @@ jobs:
                 fi
               " || echo "null")
 
+            echo "init_succeed: $init_succeed"
+
             # Check if the file was found and break if so
-            if [[ $init_succeed == "true" ]]; then
-              echo "Init script validation succeeded on attempt $i."
-              break
-            elif [ $init_succeed == "false" ]; then
-              echo "Init script validation failed on attempt $i."
+            if [[ $init_succeed != "null" ]]; then
+              echo "Init script validation $init_succeed on attempt $i."
               break
             fi
 
