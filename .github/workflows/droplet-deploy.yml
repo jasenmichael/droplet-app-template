@@ -139,10 +139,8 @@ jobs:
 
       - name: Copy Configuration File to Droplet
         run: |
-          scp -i ~/.ssh/id_rsa \
-            -o StrictHostKeyChecking=no \
-            droplet-config.yml \
-            ${{ env.APP_USER }}@${{ env.droplet_ip }}:/home/${{ env.APP_USER }}/
+          scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no droplet-config.yml ${{ env.APP_USER }}@${{ env.droplet_ip }}:/tmp/
+          # scp -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no droplet-config.yml ${{ env.APP_USER }}@${{ env.droplet_ip }}:/home/${{ env.APP_USER }}/
 
       - name: Re-provision droplet base os (if droplet exists)
         if: ${{ env.droplet_exists == 'true' }}
