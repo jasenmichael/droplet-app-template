@@ -91,18 +91,39 @@ jobs:
             --wait
 
       - name: Get Droplet IP Address
-        id: droplet_ip
         run: |
-          sleep 3
-          droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+          for i in {1..20}; do
+            droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+            
+            if [ -z "$droplet_ip" ]; then
+              echo "Attempt $i/10: Droplet IP not found, retrying in 5 seconds..."
+              sleep 1
+            else
+              echo "Droplet IP found: $droplet_ip"
+              echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+              echo "droplet_ip=$droplet_ip" >> vars.env
+              break
+            fi
+          done
+
           if [ -z "$droplet_ip" ]; then
-            echo "Droplet IP not found"
+            echo "Droplet IP not found after 10 attempts."
             exit 1
-          else
-            echo "Droplet IP found: $droplet_ip"
-            echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
-            echo "droplet_ip=$droplet_ip" >> vars.env
           fi
+
+      # - name: Get Droplet IP Address
+      #   id: droplet_ip
+      #   run: |
+      #     sleep 3
+      #     droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
+      #     if [ -z "$droplet_ip" ]; then
+      #       echo "Droplet IP not found"
+      #       exit 1
+      #     else
+      #       echo "Droplet IP found: $droplet_ip"
+      #       echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
+      #       echo "droplet_ip=$droplet_ip" >> vars.env
+      #     fi
 
       - name: Configure github ssh access to droplet
         run: |
