@@ -124,6 +124,8 @@ jobs:
             exit 1
           fi
 
+          sleep 120
+
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -150,27 +152,60 @@ jobs:
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "sudo bash -c '$script_contents'"
 
-      - name: Validate init script succeeded
-        id: validate_init
+      - name: Validate init script succeeded with retries
         run: |
-          sleep 120
-          # Validate init script succeeded
-          init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
-            --ssh-user ${{ env.APP_USER }} \
-            --ssh-key-path ~/.ssh/id_rsa \
-            --ssh-command "
-              log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-              if [[ \$log_content == 'succeed' ]]; then
-                echo 'true'
-                exit 0
-              else
-                echo 'false'
-                exit 0
-              fi
-            " || echo "false")
+          check_init_status() {
+            doctl compute ssh ${{ env.DROPLET_NAME }} \
+              --ssh-user ${{ env.APP_USER }} \
+              --ssh-key-path ~/.ssh/id_rsa \
+              --ssh-command "
+                log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
+                if [[ \$log_content == 'succeed' ]]; then
+                  echo 'true'
+                  exit 0
+                else
+                  echo 'false'
+                  exit 0
+                fi
+              " || echo "false"
+          }
 
-          echo "init_succeed: $init_succeed"
-          echo "init_succeed=$init_succeed" >> $GITHUB_ENV
+          for i in {1..12}; do
+            init_succeed=$(check_init_status)
+
+            if [[ $init_succeed == "true" ]]; then
+              echo "init_succeed=true" >> $GITHUB_ENV
+              echo "Init script succeeded on attempt $i."
+              exit 0
+            fi
+
+            echo "Attempt $i/12: Init script not ready. Retrying in 10 seconds..."
+            sleep 10
+          done
+
+          echo "init_succeed=false" >> $GITHUB_ENV
+          echo "Init script validation failed after 12 attempts."
+          exit 1
+
+      # - name: Validate init script succeeded
+      #   id: validate_init
+      #   run: |
+      #     # Validate init script succeeded
+      #     init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
+      #       --ssh-user ${{ env.APP_USER }} \
+      #       --ssh-key-path ~/.ssh/id_rsa \
+      #       --ssh-command "
+      #         log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
+      #         if [[ \$log_content == 'succeed' ]]; then
+      #           echo 'true'
+      #           exit 0
+      #         else
+      #           echo 'false'
+      #           exit 0
+      #         fi
+      #       " || echo "false")
+      #     echo "init_succeed: $init_succeed"
+      #     echo "init_succeed=$init_succeed" >> $GITHUB_ENV
 
       - name: Destroy newly created droplet if init script failed
         if: ${{ env.droplet_exists == 'false' && env.init_succeed == 'false' }}
@@ -195,19 +230,6 @@ jobs:
         run: |
           echo "Droplet init script failed"
           exit 1
-
-      # - name: Validate init script succeeded
-      #   run: |
-      #     # validate init script succeeded
-      #     doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #       --ssh-user ${{ env.APP_USER }} \
-      #       --ssh-key-path ~/.ssh/id_rsa \
-      #       --ssh-command "if [[ \$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log) == 'succeed' ]]; then echo 'init script succeeded!' && exit 0; else 'init script FAILED!' && exit 1; fi"
-
-      # - name: Destroy newly created droplet if init script failed
-      #   if: ${{ env.droplet_exists == 'false' }}
-      #   run: |
-      #     # doctl DESTROY DROPLET_NAME @ droplet_ip
 
       - name: Provision os for app with ansible-playbook
         uses: appleboy/ssh-action@v0.1.7
