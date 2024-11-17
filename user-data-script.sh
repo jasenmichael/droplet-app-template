@@ -41,5 +41,5 @@ apt install ansible -y
 echo "CASignatureAlgorithms +ssh-rsa" >>/etc/ssh/sshd_config
 
 # Log success
-# echo "failed" >/home/${APP_USER}/log/provision-droplet-init.log
-echo "succeed" >/home/${APP_USER}/log/provision-droplet-init.log
+echo "failed" >/home/${APP_USER}/log/provision-droplet-init.log
+# echo "succeed" >/home/${APP_USER}/log/provision-droplet-init.log
