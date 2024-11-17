@@ -167,6 +167,7 @@ jobs:
               fi
             " || echo "false")
 
+          echo "init_succeed: $init_succeed"
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
 
       - name: Destroy newly created droplet if init script failed
