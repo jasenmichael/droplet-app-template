@@ -124,8 +124,6 @@ jobs:
             exit 1
           fi
 
-          sleep 120
-
       - name: Remove Existing Configuration File
         uses: appleboy/ssh-action@v0.1.7
         with:
