@@ -154,42 +154,72 @@ jobs:
 
       - name: Validate init script succeeded with retries
         run: |
-          # Retry 12 times, checking if the file exists, then read its content
-          for i in {1..12}; do
-            init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
-              --ssh-user ${{ env.APP_USER }} \
-              --ssh-key-path ~/.ssh/id_rsa \
-              --ssh-command "
+          init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
+            --ssh-user ${{ env.APP_USER }} \
+            --ssh-key-path ~/.ssh/id_rsa \
+            --ssh-command "
+              for i in {1..12}; do
                 if [[ -f /home/${{ env.APP_USER }}/log/provision-droplet-init.log ]]; then
                   log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
                   if [[ \$log_content == 'succeed' ]]; then
                     echo 'true'
+                    break
                   elif [[ \$log_content == 'fail' ]]; then
                     echo 'false'
+                    break
                   fi
-                else
-                  echo 'null'
                 fi
-              " || echo "null")
+                echo \"Attempt \$i/12: Init log not found or invalid content. Retrying...\"
+                sleep 10
+              done
 
-            echo "init_succeed: $init_succeed"
+              if [[ \$i -eq 12 ]]; then
+                echo 'false'
+              fi
+            " || echo "false")
 
-            # Check if the file was found and break if so
-            if [[ $init_succeed != "null" ]]; then
-              echo "Init script validation $init_succeed on attempt $i."
-              break
-            fi
-
-            # Wait before retrying
-            echo "Attempt $i/12: Init log not found(script probably still running)."
-            echo "Retrying in 10 seconds..."
-            sleep 10
-          done
-
-          # Set the result to GitHub environment
           echo "init_succeed=$init_succeed" >> $GITHUB_ENV
           echo "Init script validation: $init_succeed"
           exit 0
+
+      # - name: Validate init script succeeded with retries
+      #   run: |
+      #     # Retry 12 times, checking if the file exists, then read its content
+      #     for i in {1..12}; do
+      #       init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
+      #         --ssh-user ${{ env.APP_USER }} \
+      #         --ssh-key-path ~/.ssh/id_rsa \
+      #         --ssh-command "
+      #           if [[ -f /home/${{ env.APP_USER }}/log/provision-droplet-init.log ]]; then
+      #             log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
+      #             if [[ \$log_content == 'succeed' ]]; then
+      #               echo 'true'
+      #             elif [[ \$log_content == 'fail' ]]; then
+      #               echo 'false'
+      #             fi
+      #           else
+      #             echo 'null'
+      #           fi
+      #         " || echo "null")
+
+      #       echo "init_succeed: $init_succeed"
+
+      #       # Check if the file was found and break if so
+      #       if [[ $init_succeed != "null" ]]; then
+      #         echo "Init script validation $init_succeed on attempt $i."
+      #         break
+      #       fi
+
+      #       # Wait before retrying
+      #       echo "Attempt $i/12: Init log not found(script probably still running)."
+      #       echo "Retrying in 10 seconds..."
+      #       sleep 10
+      #     done
+
+      #     # Set the result to GitHub environment
+      #     echo "init_succeed=$init_succeed" >> $GITHUB_ENV
+      #     echo "Init script validation: $init_succeed"
+      #     exit 0
 
       # - name: Validate init script succeeded with retries
       #   run: |
