@@ -37,9 +37,5 @@ chown -R ${APP_USER}:${APP_USER} /home/${APP_USER}/.ssh
 apt-get update -y
 apt install ansible -y
 
-# configure ssh to accept +ssh-rsa
-# echo "CASignatureAlgorithms +ssh-rsa" >>/etc/ssh/sshd_config
-
 # Log success
-# echo "failed" >/home/${APP_USER}/log/provision-droplet-init.log
-echo "succeed" >/home/${APP_USER}/log/provision-droplet-init.log
+echo "success" >/home/${APP_USER}/log/provision-droplet-init.log

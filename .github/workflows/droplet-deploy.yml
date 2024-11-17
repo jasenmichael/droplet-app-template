@@ -111,20 +111,6 @@ jobs:
             exit 1
           fi
 
-      # - name: Get Droplet IP Address
-      #   id: droplet_ip
-      #   run: |
-      #     sleep 3
-      #     droplet_ip=$(doctl compute droplet list --format "Name,PublicIPv4" --no-header | grep "${{ env.DROPLET_NAME }}" | awk '{print $2}' | head -n 1)
-      #     if [ -z "$droplet_ip" ]; then
-      #       echo "Droplet IP not found"
-      #       exit 1
-      #     else
-      #       echo "Droplet IP found: $droplet_ip"
-      #       echo "droplet_ip=$droplet_ip" >> $GITHUB_ENV
-      #       echo "droplet_ip=$droplet_ip" >> vars.env
-      #     fi
-
       - name: Configure github ssh access to droplet
         run: |
           mkdir -p ~/.ssh
@@ -173,16 +159,16 @@ jobs:
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "sudo bash -c '$script_contents'"
 
-      - name: Validate init script succeeded
+      - name: Validate init script success
         run: |
-          init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
+          init_success=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
             --ssh-user ${{ env.APP_USER }} \
             --ssh-key-path ~/.ssh/id_rsa \
             --ssh-command "
               for i in {1..12}; do
                 if [[ -f /home/${{ env.APP_USER }}/log/provision-droplet-init.log ]]; then
                   log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-                  if [[ \$log_content == 'succeed' ]]; then
+                  if [[ \$log_content == 'success' ]]; then
                     echo 'true'
                     exit 0
                   elif [[ \$log_content == 'fail' ]]; then
@@ -199,106 +185,12 @@ jobs:
               fi
             " || exit 0)
 
-          echo "init_succeed=$init_succeed" >> $GITHUB_ENV
-          echo "Init script validation: $init_succeed"
+          echo "init_success=$init_success" >> $GITHUB_ENV
+          echo "Init script validation: $init_success"
           exit 0
 
-      # - name: Validate init script succeeded with retries
-      #   run: |
-      #     # Retry 12 times, checking if the file exists, then read its content
-      #     for i in {1..12}; do
-      #       init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #         --ssh-user ${{ env.APP_USER }} \
-      #         --ssh-key-path ~/.ssh/id_rsa \
-      #         --ssh-command "
-      #           if [[ -f /home/${{ env.APP_USER }}/log/provision-droplet-init.log ]]; then
-      #             log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-      #             if [[ \$log_content == 'succeed' ]]; then
-      #               echo 'true'
-      #             elif [[ \$log_content == 'fail' ]]; then
-      #               echo 'false'
-      #             fi
-      #           else
-      #             echo 'null'
-      #           fi
-      #         " || echo "null")
-
-      #       echo "init_succeed: $init_succeed"
-
-      #       # Check if the file was found and break if so
-      #       if [[ $init_succeed != "null" ]]; then
-      #         echo "Init script validation $init_succeed on attempt $i."
-      #         break
-      #       fi
-
-      #       # Wait before retrying
-      #       echo "Attempt $i/12: Init log not found(script probably still running)."
-      #       echo "Retrying in 10 seconds..."
-      #       sleep 10
-      #     done
-
-      #     # Set the result to GitHub environment
-      #     echo "init_succeed=$init_succeed" >> $GITHUB_ENV
-      #     echo "Init script validation: $init_succeed"
-      #     exit 0
-
-      # - name: Validate init script succeeded with retries
-      #   run: |
-      #     check_init_status() {
-      #       doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #         --ssh-user ${{ env.APP_USER }} \
-      #         --ssh-key-path ~/.ssh/id_rsa \
-      #         --ssh-command "
-      #           log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-      #           if [[ \$log_content == 'succeed' ]]; then
-      #             echo 'true'
-      #             exit 0
-      #           else
-      #             echo 'false'
-      #             exit 0
-      #           fi
-      #         " || echo "false"
-      #     }
-
-      #     for i in {1..12}; do
-      #       init_succeed=$(check_init_status)
-
-      #       if [[ $init_succeed == "true" ]]; then
-      #         echo "init_succeed=true" >> $GITHUB_ENV
-      #         echo "Init script succeeded on attempt $i."
-      #         exit 0
-      #       fi
-
-      #       echo "Attempt $i/12: Init script not ready. Retrying in 10 seconds..."
-      #       sleep 10
-      #     done
-
-      #     echo "init_succeed=false" >> $GITHUB_ENV
-      #     echo "Init script validation failed after 12 attempts."
-      #     exit 0
-
-      # - name: Validate init script succeeded
-      #   id: validate_init
-      #   run: |
-      #     # Validate init script succeeded
-      #     init_succeed=$(doctl compute ssh ${{ env.DROPLET_NAME }} \
-      #       --ssh-user ${{ env.APP_USER }} \
-      #       --ssh-key-path ~/.ssh/id_rsa \
-      #       --ssh-command "
-      #         log_content=\$(cat /home/${{ env.APP_USER }}/log/provision-droplet-init.log | tr -d '\r\n')
-      #         if [[ \$log_content == 'succeed' ]]; then
-      #           echo 'true'
-      #           exit 0
-      #         else
-      #           echo 'false'
-      #           exit 0
-      #         fi
-      #       " || echo "false")
-      #     echo "init_succeed: $init_succeed"
-      #     echo "init_succeed=$init_succeed" >> $GITHUB_ENV
-
       - name: Destroy newly created droplet if init script failed
-        if: ${{ env.droplet_exists == 'false' && env.init_succeed == 'false' }}
+        if: ${{ env.droplet_exists == 'false' && env.init_success == 'false' }}
         run: |
           # Destroy the droplet by IP if the init script failed
           echo "Droplet init script failed, destroying droplet by IP..."
@@ -316,7 +208,7 @@ jobs:
           doctl compute droplet delete $droplet_id --force
 
       - name: Exit if init script failed
-        if: ${{ env.init_succeed == 'false' }}
+        if: ${{ env.init_success == 'false' }}
         run: |
           echo "Droplet init script failed"
           exit 1
