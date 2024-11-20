@@ -67,8 +67,16 @@ jobs:
           doctl auth init -t ${{ secrets.DIGITALOCEAN_API_KEY }}
           APP_USER=${{ env.APP_USER }} \
           GH_TO_DROPLET_PUBLIC_KEY="${{ secrets.GH_TO_DROPLET_PUBLIC_KEY }}" \
-          envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
 
+          if ! which envsubst >/dev/null 2>&1; then
+            echo "envsubst not found. Installing..."
+            curl -Lo envsubst https://github.com/a8m/envsubst/releases/download/v1.4.2/envsubst-Linux-x86_64
+            chmod +x envsubst
+            sudo mv envsubst /usr/local/bin/envsubst
+          fi
+
+          envsubst < ./user-data-script.sh > ./user-data-script-ready.sh
+          
           echo "Checking for droplet with name: ${{ env.DROPLET_NAME }}"
           droplet_exists=$(doctl compute droplet list --format "Name" --no-header | grep ${{ env.DROPLET_NAME }} && echo "true" || echo "false")
           if [ "$droplet_exists" == "false" ]; then
